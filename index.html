@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Financeiro - Visão Geral</title>
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
+</head>
+
+<body>
+
+    <div class="app">
+
+        <!-- MENU -->
+
+        <aside class="sidebar">
+
+            <div class="logo">
+                Financeiro
+            </div>
+
+            <nav>
+
+                <a
+                    href="index.html"
+                    class="active"
+                >
+                    Visão geral
+                </a>
+
+                <a href="contas.html">
+                    Contas
+                </a>
+
+                <a href="cartoes.html">
+                    Cartões
+                </a>
+
+                <a href="dividas.html">
+                    Dívidas
+                </a>
+
+                <a href="emprestimos.html">
+                    Empréstimos
+                </a>
+
+                <a href="investimentos.html">
+                    Investimentos
+                </a>
+
+            <a href="relatorios.html">Relat&#243;rios</a></nav>
+
+        </aside>
+
+
+        <!-- CONTEÚDO -->
+
+        <main class="main">
+
+            <section>
+
+                <header class="page-header">
+
+                    <div>
+
+                        <h1>
+                            Visão geral
+                        </h1>
+
+                        <p>
+                            Resumo da sua situação financeira.
+                        </p>
+
+                    </div>
+
+                    <a class="button-link" href="relatorios.html">Gerar relat&#243;rio PDF</a>
+
+                </header>
+
+
+                <!-- RECEITAS -->
+
+                <section class="dashboard-section">
+
+                    <h2>
+                        Receitas
+                    </h2>
+
+
+                    <div class="resumo-grid">
+
+
+                        <!-- RECEITA TOTAL -->
+
+                        <div class="resumo-card">
+
+                            <span class="resumo-label">
+                                Receita total
+                            </span>
+
+                            <strong
+                                id="receitaTotal"
+                                class="resumo-valor"
+                            >
+                                R$ 0,00
+                            </strong>
+
+                            <p>
+                                Total disponível em contas
+                            </p>
+
+                        </div>
+
+
+                        <!-- RECEITA LÍQUIDA -->
+
+                        <div class="resumo-card">
+
+                            <span class="resumo-label">
+                                Receita líquida
+                            </span>
+
+                            <strong
+                                id="receitaLiquida"
+                                class="resumo-valor"
+                            >
+                                R$ 0,00
+                            </strong>
+
+                            <p>
+                                Receitas sem investimentos
+                            </p>
+
+                        </div>
+
+
+                        <!-- INVESTIMENTOS -->
+
+                        <div class="resumo-card">
+
+                            <span class="resumo-label">
+                                Investimentos
+                            </span>
+
+                            <strong
+                                id="investimentos"
+                                class="resumo-valor"
+                            >
+                                R$ 0,00
+                            </strong>
+
+                            <p>
+                                Total investido
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- DÍVIDAS -->
+
+                <section class="dashboard-section">
+
+                    <h2>
+                        Dívidas
+                    </h2>
+
+
+                    <div class="resumo-grid">
+
+
+                        <!-- FIXAS -->
+
+                        <div class="resumo-card">
+
+                            <span class="resumo-label">
+                                Dívidas fixas
+                            </span>
+
+                            <strong
+                                id="dividasFixas"
+                                class="resumo-valor"
+                            >
+                                R$ 0,00
+                            </strong>
+
+                            <p>
+                                Despesas fixas
+                            </p>
+
+                        </div>
+
+
+                        <!-- VARIÁVEIS -->
+
+                        <div class="resumo-card">
+
+                            <span class="resumo-label">
+                                Dívidas variáveis
+                            </span>
+
+                            <strong
+                                id="dividasVariaveis"
+                                class="resumo-valor"
+                            >
+                                R$ 0,00
+                            </strong>
+
+                            <p>
+                                Despesas variáveis
+                            </p>
+
+                        </div>
+
+                        <div class="resumo-card"><span class="resumo-label">Assinaturas</span><strong id="assinaturasTotal" class="resumo-valor">R$ 0,00</strong><p>Despesas recorrentes</p></div>
+                        <div class="resumo-card"><span class="resumo-label">Gastos pontuais</span><strong id="gastosPontuaisTotal" class="resumo-valor">R$ 0,00</strong><p>Compras e parcelas</p></div>
+                        <div class="resumo-card"><span class="resumo-label">Dívidas totais</span><strong id="dividasTotais" class="resumo-valor">R$ 0,00</strong><p>Soma dos valores cadastrados</p></div>
+
+                    </div>
+
+                </section>
+
+                <section class="dashboard-section chart-card">
+                    <div class="chart-heading">
+                        <div><h2>Despesas por categoria</h2><p>Compare seus gastos no mês escolhido.</p></div>
+                        <label class="chart-period">Mês <input id="mesGraficoDespesas" type="month"></label>
+                    </div>
+                    <div class="chart-plot">
+                        <div id="graficoDespesas" class="chart-svg-container" role="group" aria-label="Gráfico de despesas por categoria"></div>
+                    </div>
+                    <div id="detalheGraficoDespesas" class="chart-detail" aria-live="polite">Passe o cursor sobre uma barra para ver o valor; clique para detalhar as despesas.</div>
+                </section>
+
+                <section class="dashboard-section">
+                    <h2>Empr&#233;stimos em aberto</h2>
+                    <div class="resumo-grid">
+                        <div class="resumo-card"><span class="resumo-label">Tenho a pagar</span><strong id="emprestimosAPagar" class="resumo-valor">R$ 0,00</strong><p>Valores que peguei emprestado</p></div>
+                        <div class="resumo-card"><span class="resumo-label">Tenho a receber</span><strong id="emprestimosAReceber" class="resumo-valor">R$ 0,00</strong><p>Valores que emprestei</p></div>
+                    </div>
+                </section>
+
+            </section>
+
+        </main>
+
+    </div>
+
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>

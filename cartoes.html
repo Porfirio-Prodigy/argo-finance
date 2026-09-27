@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financeiro - Cart&#245;es</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="app">
+        <aside class="sidebar">
+            <div class="logo">Financeiro</div>
+            <nav><a href="index.html">Vis&#227;o geral</a><a href="contas.html">Contas</a><a href="cartoes.html"
+                    class="active">Cart&#245;es</a><a href="dividas.html">D&#237;vidas</a><a
+                    href="emprestimos.html">Empr&#233;stimos</a><a href="investimentos.html">Investimentos</a><a href="relatorios.html">Relat&#243;rios</a></nav>
+        </aside>
+        <main class="main">
+            <section>
+                <header class="page-header">
+                    <div>
+                        <h1>Cart&#245;es</h1>
+                        <p>Acompanhe as compras no seu cart&#227;o e nos cart&#245;es de outras pessoas.</p>
+                    </div><a class="button-link" href="dividas.html">Registrar compra</a>
+                </header>
+                <div class="filtros-tabela"><input id="filtroMesCartoes" type="month"
+                        aria-label="Filtrar por m&#234;s"><select id="filtroDonoCartoes">
+                        <option value="">Cart&#245;es pr&#243;prios e de terceiros</option>
+                        <option value="cartao_proprio">Meu cart&#227;o</option>
+                        <option value="cartao_terceiros">Cart&#227;o de terceiros</option>
+                    </select><select id="filtroPessoaCartoes">
+                        <option value="">Compras minhas e de outras pessoas</option>
+                        <option value="eu">Compras minhas</option>
+                        <option value="outra_pessoa">Compras de outras pessoas</option>
+                    </select><input id="filtroBuscaCartoes" type="search"
+                        placeholder="Buscar cart&#227;o, pessoa ou compra"></div>
+                <div id="resumoCartoes" class="resumo-grid"></div>
+                <div class="chart-card">
+                    <div class="chart-heading">
+                        <div>
+                            <h2>Gastos por mês</h2>
+                            <p>Comparativo entre suas compras e as de outras pessoas.</p>
+                        </div>
+                    </div><div class="chart-plot"><div id="graficoCartoes" class="chart-svg-container" role="group" aria-label="Gráfico mensal de gastos no cartão"></div></div>
+                </div>
+                <div id="listaCartoes"></div>
+            </section>
+        </main>
+    </div>
+    <script src="script.js"></script>
+</body>
+
+</html>

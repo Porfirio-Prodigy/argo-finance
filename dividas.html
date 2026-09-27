@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Financeiro - Dívidas</title>
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
+</head>
+
+<body>
+
+    <div class="app">
+
+        <!-- MENU -->
+
+        <aside class="sidebar">
+
+            <div class="logo">
+                Financeiro
+            </div>
+
+            <nav>
+
+                <a href="index.html">
+                    Visão geral
+                </a>
+
+                <a href="contas.html">
+                    Contas
+                </a>
+
+                <a href="cartoes.html">
+                    Cartões
+                </a>
+
+                <a
+                    href="dividas.html"
+                    class="active"
+                >
+                    Dívidas
+                </a>
+
+                <a href="emprestimos.html">
+                    Empréstimos
+                </a>
+
+                <a href="investimentos.html">
+                    Investimentos
+                </a>
+
+            <a href="relatorios.html">Relat&#243;rios</a></nav>
+
+        </aside>
+
+
+        <!-- CONTEÚDO -->
+
+        <main class="main">
+
+            <section>
+
+                <header class="page-header">
+
+                    <div>
+
+                        <h1>
+                            Dívidas
+                        </h1>
+
+                        <p>
+                            Gerencie suas dívidas e parcelas.
+                        </p>
+
+                    </div>
+
+                    <div class="header-actions"><button id="btnAbaterDivida" class="btn-cancelar" type="button">Registrar pagamento</button>
+                    <button id="btnNovaDivida">
+                        Nova dívida
+                    </button></div>
+
+                </header>
+
+
+                <!-- LISTA -->
+
+                <div class="filtros-tabela">
+                    <input id="filtroMesDividas" type="month" aria-label="Filtrar por m&#234;s">
+                    <input id="filtroBuscaDividas" type="search" placeholder="Buscar por nome, cartão ou pessoa">
+                    <select id="filtroTipoDividas">
+                        <option value="">Todos os tipos</option>
+                        <option value="fixa">Fixa</option>
+                        <option value="variavel">Variável</option>
+                        <option value="assinatura">Assinatura</option>
+                        <option value="pontual">Gasto pontual</option>
+                    </select>
+                    <select id="filtroPagamentoDividas">
+                        <option value="">Todas as formas de pagamento</option>
+                        <option value="cartao_proprio">Cartão próprio</option>
+                        <option value="cartao_terceiros">Cartão de terceiros</option>
+                        <option value="pix">Pix</option>
+                        <option value="dinheiro">Dinheiro / físico</option>
+                    </select>
+                    <select id="filtroResponsavelDividas">
+                        <option value="">Eu e outras pessoas</option>
+                        <option value="eu">Compras minhas</option>
+                        <option value="outra_pessoa">Compras de outras pessoas</option>
+                    </select>
+                </div>
+
+                <div
+                    id="listaDividas"
+                    class="dividas-tabela-container"
+                >
+                </div>
+
+
+
+            </section>
+
+        </main>
+
+    </div>
+
+
+    <!-- MODAL -->
+
+    <div
+        id="modalDivida"
+        class="modal hidden"
+    >
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <h2 id="tituloModal">
+                    Nova dívida
+                </h2>
+
+                <button
+                    id="btnFecharModal"
+                    class="btn-fechar"
+                    type="button"
+                >
+                    ×
+                </button>
+
+            </div>
+
+
+            <!-- FORMULÁRIO -->
+
+            <form id="formDivida">
+
+                <div class="form-group">
+                    <label for="tipoDivida">Tipo de despesa</label>
+                    <select id="tipoDivida" required>
+                        <option value="fixa">Dívida fixa</option>
+                        <option value="variavel">Dívida variável</option>
+                        <option value="assinatura">Assinatura</option>
+                        <option value="pontual">Gasto pontual</option>
+                    </select>
+                </div>
+
+
+                <!-- NOME -->
+
+                <div class="form-group">
+
+                    <label for="nomeDivida">
+                        Nome da dívida
+                    </label>
+
+                    <input
+                        type="text"
+                        id="nomeDivida"
+                        placeholder="Ex: Notebook"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- DESCRIÇÃO -->
+
+                <div class="form-group">
+
+                    <label for="descricaoDivida">
+                        Descrição
+                    </label>
+
+                    <textarea
+                        id="descricaoDivida"
+                        placeholder="Descrição da dívida"
+                        rows="3"
+                    ></textarea>
+
+                </div>
+
+
+                <!-- VALOR -->
+
+                <div class="form-group">
+
+                    <label for="valorDivida">
+                        Valor total
+                    </label>
+
+                    <input
+                        type="number"
+                        id="valorDivida"
+                        placeholder="0,00"
+                        step="0.01"
+                        min="0"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- PARCELAS -->
+
+                <div class="form-row">
+
+                    <div class="form-group" id="grupoParcelasDivida">
+
+                        <label for="parcelasDivida">
+                            Parcelas
+                        </label>
+
+                        <input
+                            type="number"
+                            id="parcelasDivida"
+                            placeholder="Ex: 10"
+                            min="1"
+                            step="1"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- INÍCIO -->
+
+                    <div class="form-group">
+
+                        <label for="dataDivida">Data da compra / in&#237;cio</label>
+
+                        <input
+                            type="date"
+                            id="dataDivida"
+                            required
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <!-- FORMA DE PAGAMENTO -->
+                <div class="form-group">
+                    <label for="formaPagamentoDivida">Forma de pagamento</label>
+                    <select id="formaPagamentoDivida" required>
+                        <option value="cartao_proprio">Cart&#227;o pr&#243;prio</option>
+                        <option value="cartao_terceiros">Cart&#227;o de terceiros</option>
+                        <option value="pix">Pix</option>
+                        <option value="dinheiro">Dinheiro / f&#237;sico</option>
+                    </select>
+                </div>
+
+                <div class="form-row hidden" id="detalhesCartaoDivida">
+                    <div class="form-group">
+                        <label for="cartaoDivida">Nome do cart&#227;o</label>
+                        <input type="text" id="cartaoDivida" placeholder="Ex: Nubank">
+                    </div>
+                    <div class="form-group hidden" id="grupoTitularCartao">
+                        <label for="titularCartaoDivida">Nome do titular</label>
+                        <input type="text" id="titularCartaoDivida" placeholder="Pessoa titular do cart&#227;o">
+                    </div>
+                </div>
+
+                <div class="form-group hidden" id="grupoResponsavelCompra">
+                    <label for="responsavelCompra">Quem fez a compra?</label>
+                    <select id="responsavelCompra">
+                        <option value="eu">Eu</option>
+                        <option value="outra_pessoa">Outra pessoa</option>
+                    </select>
+                </div>
+                <div class="form-group hidden" id="grupoPessoaCompra">
+                    <label for="pessoaCompra">Nome de quem comprou</label>
+                    <input type="text" id="pessoaCompra" placeholder="Nome da pessoa">
+                </div>
+
+                <div class="form-group hidden" id="grupoDiaVencimento">
+                    <label for="diaVencimentoDivida">Dia do vencimento mensal</label>
+                    <input type="number" id="diaVencimentoDivida" min="1" max="31" step="1" placeholder="Ex: 10">
+                </div>
+
+                <!-- INFORMAÇÃO DA PARCELA -->
+
+                <div
+                    id="valorParcelaPreview"
+                    class="parcela-preview"
+                >
+                    Valor da parcela: R$ 0,00
+                </div>
+
+
+                <!-- AÇÕES -->
+
+                <div class="form-actions">
+
+                    <button
+                        type="button"
+                        id="btnCancelarDivida"
+                        class="btn-cancelar"
+                    >
+                        Cancelar
+                    </button>
+
+                    <button
+                        type="submit"
+                        id="btnSalvarDivida"
+                    >
+                        Adicionar dívida
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <div id="modalPagamentoDivida" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Abater dívida</h2>
+                <button id="btnFecharPagamentoDivida" class="btn-fechar" type="button">&times;</button>
+            </div>
+            <form id="formPagamentoDivida">
+                <div class="form-group">
+                    <label for="dividaPagamento">Dívida</label>
+                    <select id="dividaPagamento" required></select>
+                </div>
+                <p id="saldoPagamentoDivida" class="report-note"></p>
+                <div class="form-group">
+                    <label for="valorPagamentoDivida">Valor pago</label>
+                    <input id="valorPagamentoDivida" type="number" min="0.01" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label for="dataPagamentoDivida">Data do pagamento</label>
+                    <input id="dataPagamentoDivida" type="date" required>
+                </div>
+                <div class="form-actions">
+                    <button id="btnCancelarPagamentoDivida" type="button" class="btn-cancelar">Cancelar</button>
+                    <button type="submit">Salvar pagamento</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>

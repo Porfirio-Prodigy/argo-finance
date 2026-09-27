@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financeiro - Investimentos</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="app">
+        <aside class="sidebar">
+            <div class="logo">Financeiro</div>
+            <nav><a href="index.html">Vis&#227;o geral</a><a href="contas.html">Contas</a><a
+                    href="cartoes.html">Cart&#245;es</a><a href="dividas.html">D&#237;vidas</a><a
+                    href="emprestimos.html">Empr&#233;stimos</a><a href="investimentos.html"
+                    class="active">Investimentos</a><a href="relatorios.html">Relat&#243;rios</a></nav>
+        </aside>
+        <main class="main">
+            <section>
+                <header class="page-header">
+                    <div>
+                        <h1>Investimentos</h1>
+                        <p>Registre aportes e resgates com a data da movimenta&#231;&#227;o.</p>
+                    </div><button id="btnNovoInvestimento">Nova movimenta&#231;&#227;o</button>
+                </header>
+                <div class="filtros-tabela"><input id="filtroMesInvestimentos" type="month"
+                        aria-label="Filtrar por m&#234;s"><select id="filtroTipoInvestimentos">
+                        <option value="">Aportes e resgates</option>
+                        <option value="aporte">Aporte</option>
+                        <option value="resgate">Resgate</option>
+                    </select><input id="filtroBuscaInvestimentos" type="search" placeholder="Buscar investimento"></div>
+                <div id="resumoInvestimentos" class="resumo-grid"></div>
+                <div class="chart-card">
+                    <div class="chart-heading">
+                        <div>
+                            <h2>Aportes e resgates por mês</h2>
+                            <p>Acompanhe o fluxo das movimentações.</p>
+                        </div>
+                    </div><div class="chart-plot"><div id="graficoInvestimentos" class="chart-svg-container" role="group" aria-label="Gráfico mensal de aportes e resgates"></div></div>
+                </div>
+                <div id="listaInvestimentos"></div>
+            </section>
+        </main>
+    </div>
+    <div id="modalInvestimento" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="tituloModalInvestimento">Nova movimenta&#231;&#227;o</h2><button id="btnFecharInvestimento"
+                    class="btn-fechar" type="button">&times;</button>
+            </div>
+            <form id="formInvestimento">
+                <div class="form-group"><label for="tipoInvestimento">Movimenta&#231;&#227;o</label><select
+                        id="tipoInvestimento" required>
+                        <option value="aporte">Aporte</option>
+                        <option value="resgate">Resgate</option>
+                    </select></div>
+                <div class="form-group"><label for="nomeInvestimento">Investimento</label><input id="nomeInvestimento"
+                        type="text" required placeholder="Ex: Tesouro Direto"></div>
+                <div class="form-group"><label for="valorInvestimento">Valor</label><input id="valorInvestimento"
+                        type="number" min="0.01" step="0.01" required></div>
+                <div class="form-group"><label for="dataInvestimento">Data da movimenta&#231;&#227;o</label><input
+                        id="dataInvestimento" type="date" required></div>
+                <div class="form-group"><label for="descricaoInvestimento">Observa&#231;&#245;es</label><textarea
+                        id="descricaoInvestimento" rows="3"></textarea></div>
+                <div class="form-actions"><button type="button" id="btnCancelarInvestimento"
+                        class="btn-cancelar">Cancelar</button><button type="submit"
+                        id="btnSalvarInvestimento">Salvar</button></div>
+            </form>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+
+</html>

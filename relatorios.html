@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relat?rio financeiro</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="app">
+        <aside class="sidebar">
+            <div class="logo">Financeiro</div>
+            <nav>
+                <a href="index.html">Vis&#227;o geral</a><a href="contas.html">Contas</a><a
+                    href="cartoes.html">Cart&#245;es</a><a href="dividas.html">D&#237;vidas</a><a
+                    href="emprestimos.html">Empr&#233;stimos</a><a href="investimentos.html">Investimentos</a><a
+                    href="relatorios.html" class="active">Relat&#243;rios</a>
+            </nav>
+        </aside>
+        <main class="main">
+            <section class="report-page container-fluid px-0">
+                <header class="page-header">
+                    <div>
+                        <h1>Relat&#243;rio financeiro completo</h1>
+                        <p>Gere uma vis&#227;o consolidada dos seus registros em um per&#237;odo.</p>
+                    </div>
+                </header>
+                <div class="report-controls card border-0 shadow-sm">
+                    <div class="form-group"><label for="relatorioInicio">De</label><input id="relatorioInicio"
+                            class="form-control" type="date"></div>
+                    <div class="form-group"><label for="relatorioFim">At&#233;</label><input id="relatorioFim"
+                            class="form-control" type="date"></div><button id="btnGerarPdf" class="btn btn-primary">Imprimir seleção / PDF</button>
+                    <fieldset class="report-section-picker">
+                        <legend>Seções para imprimir</legend>
+                        <div class="report-section-options">
+                            <label class="form-check"><input class="form-check-input" type="checkbox" name="secoesRelatorio" value="resumo" checked><span class="form-check-label">Resumo geral</span></label>
+                            <label class="form-check"><input class="form-check-input" type="checkbox" name="secoesRelatorio" value="contas" checked><span class="form-check-label">Contas</span></label>
+                            <label class="form-check"><input class="form-check-input" type="checkbox" name="secoesRelatorio" value="cartoes" checked><span class="form-check-label">Cartões</span></label>
+                            <label class="form-check"><input class="form-check-input" type="checkbox" name="secoesRelatorio" value="dividas" checked><span class="form-check-label">Dívidas e abatimentos</span></label>
+                            <label class="form-check"><input class="form-check-input" type="checkbox" name="secoesRelatorio" value="emprestimos" checked><span class="form-check-label">Empréstimos</span></label>
+                            <label class="form-check"><input class="form-check-input" type="checkbox" name="secoesRelatorio" value="investimentos" checked><span class="form-check-label">Investimentos</span></label>
+                        </div>
+                        <div class="report-section-actions">
+                            <button id="btnSelecionarTodasSecoes" type="button" class="btn btn-outline-primary btn-sm">Selecionar todas</button>
+                            <button id="btnLimparSecoes" type="button" class="btn btn-outline-secondary btn-sm">Limpar seleção</button>
+                        </div>
+                    </fieldset>
+                </div>
+                <p class="report-help">Na janela de impress&#227;o, selecione <strong>Salvar como PDF</strong> para
+                    baixar o arquivo.</p>
+                <div id="conteudoRelatorio" class="report-content"></div>
+            </section>
+        </main>
+    </div>
+    <script src="script.js"></script>
+</body>
+
+</html>

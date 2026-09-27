@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Financeiro - Contas</title>
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
+</head>
+
+<body>
+
+    <div class="app">
+
+        <!-- MENU -->
+
+        <aside class="sidebar">
+
+            <div class="logo">
+                Financeiro
+            </div>
+
+            <nav>
+
+                <a href="index.html">
+                    Visão geral
+                </a>
+
+                <a
+                    href="contas.html"
+                    class="active"
+                >
+                    Contas
+                </a>
+
+                <a href="cartoes.html">
+                    Cartões
+                </a>
+
+                <a href="dividas.html">
+                    Dívidas
+                </a>
+
+                <a href="emprestimos.html">
+                    Empréstimos
+                </a>
+
+                <a href="investimentos.html">
+                    Investimentos
+                </a>
+
+            <a href="relatorios.html">Relat&#243;rios</a></nav>
+
+        </aside>
+
+
+        <!-- CONTEÚDO -->
+
+        <main class="main">
+
+            <section>
+
+                <header class="page-header">
+
+                    <div>
+
+                        <h1>
+                            Contas
+                        </h1>
+
+                        <p>
+                            Gerencie suas contas financeiras.
+                        </p>
+
+                    </div>
+
+                    <button id="btnNovaConta">
+                        Nova conta
+                    </button>
+
+                </header>
+
+
+                <!-- LISTA DE CONTAS -->
+
+                <div
+                    id="listaContas"
+                    class="contas-tabela-container"
+                >
+                </div>
+
+            </section>
+
+        </main>
+
+    </div>
+
+
+    <!-- MODAL -->
+
+    <div
+        id="modalConta"
+        class="modal hidden"
+    >
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <h2 id="tituloModal">
+                    Nova conta
+                </h2>
+
+                <button
+                    id="btnFecharModal"
+                    class="btn-fechar"
+                    type="button"
+                >
+                    ×
+                </button>
+
+            </div>
+
+
+            <!-- FORMULÁRIO -->
+
+            <form id="formConta">
+
+                <!-- NOME -->
+
+                <div class="form-group">
+
+                    <label for="nomeConta">
+                        Nome da conta
+                    </label>
+
+                    <input
+                        type="text"
+                        id="nomeConta"
+                        placeholder="Ex: Nubank"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- TIPO -->
+
+                <div class="form-group">
+
+                    <label for="tipoConta">
+                        Tipo da conta
+                    </label>
+
+                    <select
+                        id="tipoConta"
+                        required
+                    >
+
+                        <option value="">
+                            Selecione o tipo
+                        </option>
+
+                        <option value="Conta corrente">
+                            Conta corrente
+                        </option>
+
+                        <option value="Poupança">
+                            Poupança
+                        </option>
+
+                        <option value="Carteira">
+                            Carteira
+                        </option>
+
+                        <option value="Dinheiro">
+                            Dinheiro
+                        </option>
+
+                        <option value="Investimento">
+                            Investimento
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- VALOR -->
+
+                <div class="form-group">
+
+                    <label for="valorConta">
+                        Valor
+                    </label>
+
+                    <input
+                        type="number"
+                        id="valorConta"
+                        placeholder="0,00"
+                        step="0.01"
+                        min="0"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- AÇÕES -->
+
+                <div class="form-actions">
+
+                    <button
+                        type="button"
+                        id="btnCancelarConta"
+                        class="btn-cancelar"
+                    >
+                        Cancelar
+                    </button>
+
+                    <button
+                        type="submit"
+                        id="btnSalvarConta"
+                    >
+                        Adicionar conta
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>
