@@ -1,27 +1,18 @@
 # Argo Finance
 
-Aplicação web para organizar contas, cartões, dívidas, pagamentos, empréstimos e investimentos. Os dados ficam no `localStorage` do navegador usado para abrir o app; não há banco de dados no servidor.
+Aplicação web estática para organizar contas, cartões, dívidas e abatimentos, empréstimos e investimentos. Toda a lógica roda no navegador, e os registros ficam no `localStorage`.
 
-## Requisitos
+## Como abrir
 
-- Node.js 24.x
-- Navegador moderno
-- Conexão com a internet para carregar o Bootstrap no relatório
+- Localmente: abra `index.html` no navegador.
+- Publicação: envie o projeto para uma hospedagem de sites estáticos, como a Vercel. O `vercel.json` publica os arquivos da pasta raiz sem etapa de build.
 
-## Como executar
+Não é necessário instalar Node.js nem dependências.
 
-Na pasta do projeto, rode:
+## Armazenamento
 
-```bash
-npm start
-```
+Os dados ficam no navegador e na origem (endereço) usados para abrir o app. Eles não são sincronizados entre dispositivos e podem ser apagados ao limpar os dados do navegador. Ao trocar o endereço de publicação, o navegador trata o `localStorage` como um espaço separado.
 
-Abra [http://127.0.0.1:8000](http://127.0.0.1:8000). O servidor Node serve os arquivos da aplicação; os dados são gravados no armazenamento local do navegador.
+As telas de contas, cartões, dívidas, empréstimos e investimentos permitem excluir registros, com confirmação. Uma compra de cartão também é uma dívida; apagá-la remove também seus abatimentos.
 
-## Armazenamento e exclusão
-
-Contas, dívidas e abatimentos, empréstimos e investimentos são mantidos no `localStorage`. Eles não são sincronizados entre navegadores ou dispositivos e podem ser removidos ao limpar os dados do navegador.
-
-As telas de contas, cartões, dívidas, empréstimos e investimentos permitem excluir registros. A aplicação pede confirmação antes de apagar. Uma compra de cartão também é uma dívida e, por isso, excluir pela tela de cartões remove esse registro da lista de dívidas e seus abatimentos.
-
-Os antigos arquivos SQLite não são mais usados pelo servidor. Eles não são importados automaticamente para o `localStorage`.
+Os arquivos SQLite antigos não são usados nem importados automaticamente para o `localStorage`.

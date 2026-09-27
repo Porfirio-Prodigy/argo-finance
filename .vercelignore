@@ -1,0 +1,5 @@
+.git
+emprestimos.sql
+*.sqlite3
+*.sqlite3-*
+*.db
