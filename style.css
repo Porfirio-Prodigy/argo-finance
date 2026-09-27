@@ -1015,6 +1015,27 @@ button:not(.btn-cancelar):not(.btn-fechar):hover { background: var(--brand-deep)
 .btn-editar, .btn-editar-divida, .btn-editar-emprestimo, .btn-editar-investimento { background: #e9edff !important; color: #404db7 !important; }
 .header-actions { display: flex; align-items: center; gap: 10px; }
 .btn-editar:hover, .btn-editar-divida:hover, .btn-editar-emprestimo:hover, .btn-editar-investimento:hover { background: #dce2ff !important; }
+
+.acoes-registro {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.btn-excluir {
+    padding: 8px 12px;
+    border: 1px solid #f2c7c5;
+    border-radius: 8px;
+    background: #fff1f0;
+    color: #b42318;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.btn-excluir:hover {
+    background: #ffe0dd;
+}
 .button-link { background: var(--brand); }
 .tabela-responsiva { border: 1px solid var(--line); border-radius: 16px; box-shadow: var(--shadow); }
 .tabela-dividas th { background: #f0f3fa; color: #526079; }

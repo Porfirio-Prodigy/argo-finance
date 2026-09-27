@@ -1,29 +1,5 @@
 const STORAGE_KEY = "financeiro_contas";
 
-// Compatibilidade com a API já usada pelo restante do app, persistindo cada
-// coleção diretamente no SQLite servido por server.js.
-const armazenamentoNavegador = window.localStorage;
-const localStorage = {
-    getItem(chave) {
-        const xhr = new XMLHttpRequest();
-        xhr.open("GET", `/api/data?key=${encodeURIComponent(chave)}`, false);
-        xhr.send();
-        if (xhr.status === 200) return JSON.stringify(JSON.parse(xhr.responseText).value);
-        if (xhr.status !== 404) throw new Error("Não foi possível ler o banco SQLite. Inicie o servidor Node com npm start.");
-        const legado = armazenamentoNavegador.getItem(chave);
-        if (legado !== null) this.setItem(chave, legado);
-        return legado;
-    },
-    setItem(chave, valor) {
-        const xhr = new XMLHttpRequest();
-        xhr.open("PUT", "/api/data", false);
-        xhr.setRequestHeader("Content-Type", "application/json");
-        xhr.send(JSON.stringify({ key: chave, value: JSON.parse(valor) }));
-        if (xhr.status !== 200) throw new Error("Não foi possível salvar no SQLite.");
-    }
-};
-
-
 // =========================
 // FUNÇÕES GERAIS
 // =========================
@@ -488,6 +464,12 @@ function iniciarContas() {
 
         listaContas.querySelectorAll(".btn-editar").forEach(botao => {
             botao.addEventListener("click", () => editarConta(botao.dataset.id));
+        });
+        adicionarAcoesExcluir(listaContas, ".btn-editar", contas, conta => `a conta \"${conta.nome}\"`, id => {
+            contas = contas.filter(item => String(item.id) !== String(id));
+            salvarContas(contas);
+            renderizarContas();
+            carregarVisaoGeral();
         });
     }
 
@@ -1188,6 +1170,11 @@ function iniciarDividas() {
             }
         );
 
+        adicionarAcoesExcluir(listaDividas, ".btn-editar-divida", dividas, divida => `a dívida \"${divida.nome || "sem nome"}\" e seus abatimentos`, id => {
+            salvarDividas(dividas.filter(item => String(item.id) !== String(id)));
+            window.location.reload();
+        });
+
     }
 
 
@@ -1279,6 +1266,11 @@ function iniciarEmprestimos() {
             return `<tr><td>${movimento}</td><td>${escaparHtml(item.pessoa)}</td><td>${formatarMoeda(Number(item.valor))}</td><td>${formatarMoeda(Number(item.pago || 0))}</td><td>${formatarMoeda(restante)}</td><td>${formatarData(item.data || (item.inicio ? `${item.inicio}-01` : ""))}</td><td>${escaparHtml(item.descricao || "-")}</td><td><button class="btn-editar-emprestimo" data-id="${escaparHtml(item.id)}">Editar</button></td></tr>`;
         }).join("") : '<tr><td colspan="8">Nenhum empréstimo corresponde aos filtros.</td></tr>'}</tbody></table></div>`;
         lista.querySelectorAll(".btn-editar-emprestimo").forEach(button => button.addEventListener("click", () => editar(button.dataset.id)));
+        adicionarAcoesExcluir(lista, ".btn-editar-emprestimo", registros, item => `o empréstimo de ${item.pessoa}`, id => {
+            registros = registros.filter(item => String(item.id) !== String(id));
+            salvar();
+            renderizar();
+        });
     }
 
     function editar(id) {
@@ -1365,6 +1357,14 @@ function iniciarCartoes() {
             const quem = item.responsavelCompra === "outra_pessoa" ? (item.pessoaCompra || "Outra pessoa") : "Eu";
             return `<tr><td>${formatarData(item.data || (item.inicio ? `${item.inicio}-01` : ""))}</td><td>${item.nome || "-"}</td><td>${item.cartao || "-"}</td><td>${forma === "cartao_terceiros" ? `De ${item.titularCartao || "terceiros"}` : "Meu cartão"}</td><td>${quem}</td><td>${formatarMoeda(Number(item.valor || 0))}</td><td>${item.parcelas || 1}x</td><td><a href="dividas.html">Editar em Dívidas</a></td></tr>`;
         }).join("") : '<tr><td colspan="8">Nenhuma compra no cartão corresponde aos filtros.</td></tr>'}</tbody></table></div>`;
+        lista.querySelectorAll('tbody tr').forEach((linha, indice) => {
+            const link = linha.querySelector('a[href="dividas.html"]');
+            if (link && filtradas[indice]) link.dataset.id = filtradas[indice].id;
+        });
+        adicionarAcoesExcluir(lista, 'a[href="dividas.html"]', filtradas, item => `a compra "${item.nome || "sem nome"}"`, id => {
+            salvarDividas(carregarDividas().filter(item => String(item.id) !== String(id)));
+            window.location.reload();
+        });
     }
 
     [mes, dono, pessoa].forEach(input => input.addEventListener("change", renderizar));
@@ -1395,6 +1395,11 @@ function iniciarInvestimentos() {
         document.getElementById("resumoInvestimentos").innerHTML = `<div class="resumo-card"><span class="resumo-label">Movimentações no período</span><strong class="resumo-valor">${formatarMoeda(saldoPeriodo)}</strong></div><div class="resumo-card"><span class="resumo-label">Saldo líquido registrado</span><strong class="resumo-valor">${formatarMoeda(saldoGeral)}</strong></div>`;
         lista.innerHTML = `<div class="tabela-responsiva"><table class="tabela-dividas"><thead><tr><th>Data</th><th>Movimentação</th><th>Investimento</th><th>Valor</th><th>Observações</th><th></th></tr></thead><tbody>${filtrados.length ? filtrados.map(item => `<tr><td>${formatarData(item.data)}</td><td>${item.tipo === "resgate" ? "Resgate" : "Aporte"}</td><td>${item.nome}</td><td>${formatarMoeda(Number(item.valor))}</td><td>${item.descricao || "-"}</td><td><button class="btn-editar-investimento" data-id="${item.id}">Editar</button></td></tr>`).join("") : '<tr><td colspan="6">Nenhuma movimentação corresponde aos filtros.</td></tr>'}</tbody></table></div>`;
         lista.querySelectorAll(".btn-editar-investimento").forEach(button => button.addEventListener("click", () => editar(button.dataset.id)));
+        adicionarAcoesExcluir(lista, ".btn-editar-investimento", movimentos, item => `a movimentação \"${item.nome}\"`, id => {
+            movimentos = movimentos.filter(item => String(item.id) !== String(id));
+            localStorage.setItem(chave, JSON.stringify(movimentos));
+            renderizar();
+        });
     }
     function fechar() { modal.classList.add("hidden"); form.reset(); editandoId = null; }
     function editar(id) {
@@ -1657,6 +1662,27 @@ function escaparHtml(valor) {
     return String(valor ?? "").replace(/[&<>"']/g, caractere => ({
         "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
     })[caractere]);
+}
+
+function adicionarAcoesExcluir(container, seletor, registros, descricao, excluir) {
+    container.querySelectorAll(seletor).forEach(botao => {
+        const id = botao.dataset.id;
+        const registro = registros.find(item => String(item.id) === String(id));
+        if (!registro) return;
+        const acao = document.createElement("button");
+        acao.type = "button";
+        acao.className = "btn-excluir";
+        acao.textContent = "Excluir";
+        acao.setAttribute("aria-label", `Excluir ${descricao(registro)}`);
+        const grupo = document.createElement("span");
+        grupo.className = "acoes-registro";
+        botao.before(grupo);
+        grupo.append(botao, acao);
+        acao.addEventListener("click", () => {
+            const nome = descricao(registro);
+            if (confirm(`Excluir ${nome}? Essa ação não pode ser desfeita.`)) excluir(id, registro);
+        });
+    });
 }
 
 function iniciarRelatorio() {
