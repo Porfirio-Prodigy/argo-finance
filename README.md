@@ -4,7 +4,7 @@ Aplicação web local para organizar contas, cartões, dívidas, empréstimos e 
 
 ## Requisitos
 
-- Node.js 22.13 ou mais recente (`node:sqlite` é usado pelo servidor)
+- Node.js 24.x (`node:sqlite` é usado pelo servidor)
 - Navegador moderno
 - Conexão com a internet para carregar o Bootstrap no relatório
 
