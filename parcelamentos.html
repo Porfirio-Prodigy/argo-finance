@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <title>Parcelamentos</title>
+</head>
+<body>
+    <div class="app">
+        <aside class="sidebar">
+            <div class="logo">Financeiro</div>
+            <nav>
+                <a href="index.html">Visão geral</a><a href="contas.html">Contas</a><a href="cartoes.html">Cartões</a><a href="dividas.html">Dívidas</a><a href="calendario.html">Calendário</a><a href="orcamento.html">Orçamento</a><a href="planejamento.html">Planejamento</a><a href="parcelamentos.html" class="active">Parcelamentos</a><a href="emprestimos.html">Empréstimos</a><a href="investimentos.html">Investimentos</a><a href="relatorios.html">Relatórios</a><a href="ajuda.html">Ajuda</a>
+            </nav>
+        </aside>
+        <main class="main">
+            <section class="installments-page">
+                <header class="page-header"><div><h1>Parcelamentos</h1><p>Veja cada parcela, o que já foi pago e quanto ainda falta.</p></div><a class="button-link" href="dividas.html">Cadastrar compra parcelada</a></header>
+                <div id="resumoParcelamentos" class="resumo-grid monthly-debt-summary"></div>
+                <div class="filtros-tabela installments-filters"><input id="buscaParcelamentos" type="search" placeholder="Buscar compra, grupo ou referencia do cartao"><select id="filtroPessoaParcelamento"><option value="">Todas as pessoas</option></select><select id="filtroCartaoParcelamento"><option value="">Todos os cartoes</option></select><select id="filtroStatusParcelamento"><option value="">Todas as parcelas</option><option value="pendente">Nao pagas</option><option value="parcial">Pagas parcialmente</option><option value="paga">Pagas</option></select></div>
+                <div id="listaParcelamentos"></div>
+            </section>
+        </main>
+    </div>
+    <script src="assets/js/script.js"></script>
+    <script src="assets/js/parcelamentos.js"></script>
+</body>
+</html>

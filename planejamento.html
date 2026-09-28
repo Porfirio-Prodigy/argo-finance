@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <title>Planejamento financeiro</title>
+</head>
+<body>
+    <div class="app">
+        <aside class="sidebar">
+            <div class="logo">Financeiro</div>
+            <nav>
+                <a href="index.html">Visão geral</a><a href="contas.html">Contas</a><a href="cartoes.html">Cartões</a><a href="dividas.html">Dívidas</a><a href="parcelamentos.html">Parcelamentos</a><a href="calendario.html">Calendário</a><a href="orcamento.html">Orçamento</a><a href="planejamento.html" class="active">Planejamento</a><a href="emprestimos.html">Empréstimos</a><a href="investimentos.html">Investimentos</a><a href="relatorios.html">Relatórios</a><a href="ajuda.html">Ajuda</a>
+            </nav>
+        </aside>
+        <main class="main">
+            <section class="planning-page">
+                <header class="page-header"><div><h1>Planejamento</h1><p>Veja se o dinheiro deve cobrir os próximos compromissos e acompanhe seus objetivos.</p></div></header>
+
+                <section class="dashboard-section planning-cashflow" aria-labelledby="tituloFluxoCaixa">
+                    <div class="chart-heading planning-section-heading"><div><h2 id="tituloFluxoCaixa">Fluxo de caixa futuro</h2><p>Estimativa baseada no saldo das contas, nas rendas informadas e nas despesas cadastradas.</p></div>
+                        <label class="planning-horizon">Prever até
+                            <select id="horizonteFluxoCaixa"><option value="7">7 dias</option><option value="30" selected>30 dias</option><option value="60">60 dias</option><option value="90">90 dias</option><option value="180">6 meses</option><option value="365">12 meses</option></select>
+                        </label>
+                    </div>
+                    <div class="resumo-grid planning-summary">
+                        <div class="resumo-card"><span class="resumo-label">Saldo atual</span><strong id="saldoAtualFluxo" class="resumo-valor">R$ 0,00</strong></div>
+                        <div class="resumo-card"><span class="resumo-label">Saldo no fim do período</span><strong id="saldoFinalFluxo" class="resumo-valor">R$ 0,00</strong><p id="periodoFluxoTexto"></p></div>
+                        <div class="resumo-card"><span class="resumo-label">Menor saldo previsto</span><strong id="menorSaldoFluxo" class="resumo-valor">R$ 0,00</strong></div>
+                    </div>
+                    <div id="alertaSaldoNegativo" class="planning-alert hidden" role="status"></div>
+                    <div id="graficoFluxoCaixa" class="cashflow-chart" role="img" aria-label="Gráfico de evolução do saldo projetado"></div>
+                    <div id="eventosFluxoCaixa" class="cashflow-upcoming"></div>
+                    <p class="report-note">A projeção considera pagamentos ainda não registrados de despesas recorrentes e parcelas, além das receitas futuras e rendas mensais cadastradas aqui. Valores reais podem mudar.</p>
+                </section>
+
+                <section class="dashboard-section planning-income-section" aria-labelledby="tituloRendas">
+                    <div class="chart-heading planning-section-heading"><div><h2 id="tituloRendas">Renda mensal prevista</h2><p>Cadastre salário ou outra entrada que costuma acontecer todo mês.</p></div></div>
+                    <form id="formRendaRecorrente" class="planning-inline-form">
+                        <label>Nome<input id="nomeRendaRecorrente" type="text" placeholder="Ex.: Salário" required maxlength="80"></label>
+                        <label>Valor mensal<input id="valorRendaRecorrente" type="number" min="0.01" step="0.01" required></label>
+                        <label>Dia em que recebe<input id="diaRendaRecorrente" type="number" min="1" max="31" value="1" required></label>
+                        <button type="submit">Adicionar renda</button>
+                    </form>
+                    <div id="listaRendasRecorrentes" class="simple-record-list"></div>
+                </section>
+
+                <section class="dashboard-section planning-income-section" aria-labelledby="tituloParcelasEmprestimos">
+                    <div class="chart-heading planning-section-heading"><div><h2 id="tituloParcelasEmprestimos">Parcelas de empréstimos</h2><p>Informe o valor e o próximo vencimento para incluir empréstimos na projeção.</p></div></div>
+                    <form id="formParcelaEmprestimo" class="planning-inline-form">
+                        <label>Empréstimo<select id="emprestimoPlanejado" required><option value="">Selecione</option></select></label>
+                        <label>Valor da parcela<input id="valorParcelaEmprestimo" type="number" min="0.01" step="0.01" required></label>
+                        <label>Próximo vencimento<input id="dataParcelaEmprestimo" type="date" required></label>
+                        <button type="submit">Salvar vencimento</button>
+                    </form>
+                    <div id="listaParcelasEmprestimos" class="simple-record-list"></div>
+                </section>
+
+                <section class="dashboard-section goals-section" aria-labelledby="tituloMetas">
+                    <div class="chart-heading planning-section-heading"><div><h2 id="tituloMetas">Metas financeiras</h2><p>Defina um objetivo e acompanhe quanto falta para chegar lá.</p></div><button id="btnNovaMeta" type="button">Criar meta</button></div>
+                    <div id="listaMetasFinanceiras" class="goal-grid"></div>
+                </section>
+            </section>
+        </main>
+    </div>
+
+    <div id="modalMetaFinanceira" class="modal hidden"><div class="modal-content"><div class="modal-header"><h2 id="tituloModalMeta">Nova meta</h2><button id="btnFecharMeta" class="btn-fechar" type="button" aria-label="Fechar">×</button></div>
+        <form id="formMetaFinanceira">
+            <div class="form-group"><label for="nomeMeta">Nome da meta</label><input id="nomeMeta" type="text" placeholder="Ex.: Reserva de emergência" maxlength="80" required></div>
+            <div class="form-row"><div class="form-group"><label for="objetivoMeta">Valor objetivo</label><input id="objetivoMeta" type="number" min="0.01" step="0.01" required></div><div class="form-group"><label for="valorAtualMeta">Quanto já juntou?</label><input id="valorAtualMeta" type="number" min="0" step="0.01" value="0" required></div></div>
+            <div class="form-row"><div class="form-group"><label for="prazoMeta">Prazo desejado</label><input id="prazoMeta" type="date" required></div><div class="form-group"><label for="aporteMeta">Aporte mensal planejado</label><input id="aporteMeta" type="number" min="0" step="0.01" value="0" required></div></div>
+            <div class="form-group"><label for="relacionamentoMeta">Conta ou investimento relacionado (opcional)</label><select id="relacionamentoMeta"><option value="">Não vincular</option></select></div>
+            <div class="form-group"><label for="descricaoMeta">Descrição (opcional)</label><textarea id="descricaoMeta" rows="3" maxlength="400" placeholder="Por que essa meta é importante?"></textarea></div>
+            <div class="form-actions"><button type="button" id="btnCancelarMeta" class="btn-cancelar">Cancelar</button><button type="submit" id="btnSalvarMeta">Salvar meta</button></div>
+        </form>
+    </div></div>
+    <script src="assets/js/script.js"></script>
+    <script src="assets/js/planejamento.js"></script>
+</body>
+</html>

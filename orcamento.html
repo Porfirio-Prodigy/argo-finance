@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <title>Orçamento mensal · Financeiro</title>
+</head>
+<body>
+    <div class="app">
+        <aside class="sidebar">
+            <div class="logo">Financeiro</div>
+            <nav>
+                <a href="index.html">Visão geral</a><a href="contas.html">Contas</a><a href="cartoes.html">Cartões</a><a href="dividas.html">Dívidas</a><a href="parcelamentos.html">Parcelamentos</a><a href="calendario.html">Calendário</a><a href="orcamento.html" class="active">Orçamento</a><a href="planejamento.html">Planejamento</a><a href="emprestimos.html">Empréstimos</a><a href="investimentos.html">Investimentos</a><a href="relatorios.html">Relatórios</a><a href="ajuda.html">Ajuda</a>
+            </nav>
+        </aside>
+        <main class="main budget-page">
+            <header class="page-header"><div><h1>Orçamento por categoria</h1><p>Defina limites simples e acompanhe quanto já foi pago em cada categoria.</p></div></header>
+            <section class="dashboard-section budget-toolbar">
+                <label>Período <select id="tipoPeriodoOrcamento"><option value="mensal">Mensal</option><option value="anual">Anual</option><option value="recorrente">Recorrente todo mês</option></select></label>
+                <label id="grupoMesOrcamento">Mês <input id="mesOrcamento" type="month"></label>
+                <label id="grupoAnoOrcamento" class="hidden">Ano <input id="anoOrcamento" type="number" min="2000" max="2100"></label>
+                <button id="btnCopiarOrcamento" type="button" class="btn-cancelar">Copiar mês para...</button>
+            </section>
+            <section class="dashboard-section">
+                <form id="formOrcamentoCategoria" class="planning-inline-form budget-form">
+                    <label>Categoria<input id="categoriaOrcamento" type="text" maxlength="60" placeholder="Ex.: Alimentação" required></label>
+                    <label>Limite (R$)<input id="limiteOrcamento" type="number" min="0.01" step="0.01" placeholder="500,00" required></label>
+                    <button type="submit">Adicionar limite</button>
+                </form>
+            </section>
+            <section class="dashboard-section budget-summary" id="resumoOrcamento" aria-live="polite"></section>
+            <section class="dashboard-section chart-card">
+                <div class="chart-heading"><div><h2>Orçamento e realizado</h2><p>O realizado soma os pagamentos cadastrados nas despesas do Argo.</p></div></div>
+                <div class="table-responsive"><table class="tabela-dividas"><thead><tr><th>Categoria</th><th>Orçamento</th><th>Realizado</th><th>Diferença</th><th>Utilizado</th><th>Status</th><th></th></tr></thead><tbody id="listaOrcamento"></tbody></table></div>
+                <p class="report-note">Despesas sem pagamento registrado ainda não entram no realizado. Cadastre a categoria nas despesas para incluí-las no orçamento.</p>
+            </section>
+        </main>
+    </div>
+    <script src="assets/js/script.js"></script>
+    <script src="assets/js/orcamento.js"></script>
+</body>
+</html>

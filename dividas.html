@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 
 <head>
-    <link rel="icon" type="image/svg+xml" href="./favicon.svg">
+    <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
 
     <meta charset="UTF-8">
 
@@ -15,7 +15,7 @@
 
     <link
         rel="stylesheet"
-        href="./style.css"
+        href="assets/css/style.css"
     >
 
 </head>
@@ -32,7 +32,7 @@
                 Financeiro
             </div>
 
-            <nav><a href="index.html">Visão geral</a><a href="contas.html">Contas</a><a href="cartoes.html">Cartões</a><a href="dividas.html" class="active">Dívidas</a><a href="calendario.html">Calendário</a><a href="emprestimos.html">Empréstimos</a><a href="investimentos.html">Investimentos</a><a href="relatorios.html">Relatórios</a><a href="ajuda.html">Ajuda</a></nav>
+            <nav><a href="index.html">Visão geral</a><a href="contas.html">Contas</a><a href="cartoes.html">Cartões</a><a href="dividas.html" class="active">Dívidas</a><a href="calendario.html">Calendário</a><a href="orcamento.html">Orçamento</a><a href="planejamento.html">Planejamento</a><a href="emprestimos.html">Empréstimos</a><a href="investimentos.html">Investimentos</a><a href="relatorios.html">Relatórios</a><a href="ajuda.html">Ajuda</a></nav>
 
         </aside>
 
@@ -57,7 +57,7 @@
 
                     </div>
 
-                    <div class="header-actions"><button id="btnAbaterDivida" class="btn-cancelar" type="button">Registrar pagamento</button>
+                    <div class="header-actions"><a class="button-link" href="parcelamentos.html">Ver parcelamentos</a><button id="btnAbaterDivida" class="btn-cancelar" type="button">Registrar pagamento</button>
                     <button id="btnNovaDivida">
                         Nova dívida
                     </button></div>
@@ -82,6 +82,7 @@
                         <option value="cartao_proprio">Cartão próprio</option>
                         <option value="cartao_terceiros">Cartão de terceiros</option>
                         <option value="pix">Pix</option>
+                        <option value="boleto">Boleto</option>
                         <option value="dinheiro">Dinheiro / físico</option>
                     </select>
                     <select id="filtroResponsavelDividas">
@@ -164,6 +165,11 @@
 
                 </div>
 
+                <div class="form-group">
+                    <label for="categoriaDivida">Categoria</label>
+                    <input type="text" id="categoriaDivida" maxlength="60" placeholder="Ex.: Eletrônicos, casa, saúde">
+                </div>
+
 
                 <!-- DESCRIÇÃO -->
 
@@ -240,6 +246,11 @@
 
                 </div>
 
+                <div class="form-group hidden" id="grupoParcelasJaPagas">
+                    <label for="parcelasJaPagas">Parcelas que já foram pagas</label>
+                    <input type="number" id="parcelasJaPagas" min="0" step="1" value="0">
+                    <small>Use isso se a compra começou antes de você cadastrar no Argo.</small>
+                </div>
 
                 <!-- FORMA DE PAGAMENTO -->
                 <div class="form-group">
@@ -248,6 +259,7 @@
                         <option value="cartao_proprio">Cartão próprio</option>
                         <option value="cartao_terceiros">Cartão de terceiros</option>
                         <option value="pix">Pix</option>
+                        <option value="boleto">Boleto</option>
                         <option value="dinheiro">Dinheiro / físico</option>
                     </select>
                 </div>
@@ -275,9 +287,46 @@
                     <input type="text" id="pessoaCompra" placeholder="Nome da pessoa">
                 </div>
 
+                <div class="form-group hidden" id="grupoReferenciaFatura">
+                    <label for="referenciaFaturaDivida">Nome da compra na fatura</label>
+                    <input type="text" id="referenciaFaturaDivida" maxlength="100" placeholder="Ex.: LOJA*NOTEBOOK 03/10">
+                    <small>Copie como aparece no cartão para localizar a cobrança.</small>
+                </div>
+
+                <div class="form-group hidden" id="grupoComprasAgrupadas">
+                    <label for="grupoCompraDivida">Agrupar com outras compras (opcional)</label>
+                    <input type="text" id="grupoCompraDivida" maxlength="80" placeholder="Ex.: Compras da fatura de setembro">
+                    <small>Use o mesmo nome nas compras que deseja ver juntas.</small>
+                </div>
+
                 <div class="form-group hidden" id="grupoDiaVencimento">
-                    <label for="diaVencimentoDivida">Dia do vencimento mensal</label>
+                    <label for="diaVencimentoDivida">Dia de vencimento</label>
                     <input type="number" id="diaVencimentoDivida" min="1" max="31" step="1" placeholder="Ex: 10">
+                    <small id="ajudaDiaVencimentoDivida" class="form-hint">Nas compras parceladas, se deixar vazio, usamos o dia da compra.</small>
+                </div>
+
+                <div class="form-row hidden" id="grupoRecorrenciaDivida">
+                    <div class="form-group">
+                        <label for="periodicidadeDivida">Periodicidade</label>
+                        <select id="periodicidadeDivida"><option value="mensal">Todo mês</option></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="contaRecorrenciaDivida">Conta usada para pagar (opcional)</label>
+                        <select id="contaRecorrenciaDivida"><option value="">Escolher ao registrar pagamento</option></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="fimRecorrenciaDivida">Repetir até (opcional)</label>
+                        <input type="date" id="fimRecorrenciaDivida">
+                        <small class="form-hint">Sem data final, a conta continua prevista todo mês.</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="statusRecorrenciaDivida">Situação da recorrência</label>
+                        <select id="statusRecorrenciaDivida">
+                            <option value="ativa">Ativa</option>
+                            <option value="pausada">Pausada</option>
+                            <option value="cancelada">Cancelada</option>
+                        </select>
+                    </div>
                 </div>
 
                 <!-- INFORMAÇÃO DA PARCELA -->
@@ -349,7 +398,7 @@
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <script src="assets/js/script.js"></script>
 
 </body>
 

@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 
 <head>
-    <link rel="icon" type="image/svg+xml" href="./favicon.svg">
+    <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
 
     <meta charset="UTF-8">
 
@@ -15,7 +15,7 @@
 
     <link
         rel="stylesheet"
-        href="./style.css"
+        href="assets/css/style.css"
     >
 
 </head>
@@ -32,7 +32,7 @@
                 Financeiro
             </div>
 
-            <nav><a href="index.html" class="active">Visão geral</a><a href="contas.html">Contas</a><a href="cartoes.html">Cartões</a><a href="dividas.html">Dívidas</a><a href="calendario.html">Calendário</a><a href="emprestimos.html">Empréstimos</a><a href="investimentos.html">Investimentos</a><a href="relatorios.html">Relatórios</a><a href="ajuda.html">Ajuda</a></nav>
+            <nav><a href="index.html" class="active">Visão geral</a><a href="contas.html">Contas</a><a href="cartoes.html">Cartões</a><a href="dividas.html">Dívidas</a><a href="parcelamentos.html">Parcelamentos</a><a href="calendario.html">Calendário</a><a href="orcamento.html">Orçamento</a><a href="planejamento.html">Planejamento</a><a href="emprestimos.html">Empréstimos</a><a href="investimentos.html">Investimentos</a><a href="relatorios.html">Relatórios</a><a href="ajuda.html">Ajuda</a></nav>
 
         </aside>
 
@@ -57,9 +57,36 @@
 
                     </div>
 
-                    <a class="button-link" href="relatorios.html">Gerar relatório PDF</a>
+                    <div class="header-actions"><a class="button-link" href="orcamento.html">Meu orçamento</a><a class="button-link" href="planejamento.html">Fluxo de caixa e metas</a><a class="button-link" href="relatorios.html">Gerar relatório PDF</a></div>
 
                 </header>
+
+                <section class="dashboard-section" aria-labelledby="tituloIndicadores">
+                    <h2 id="tituloIndicadores">Seu mês em resumo</h2>
+                    <div class="resumo-grid dashboard-kpis">
+                        <div class="resumo-card"><span class="resumo-label">Saldo atual</span><strong id="kpiSaldoAtual" class="resumo-valor">R$ 0,00</strong></div>
+                        <div class="resumo-card"><span class="resumo-label">Saldo projetado</span><strong id="kpiSaldoProjetado" class="resumo-valor">R$ 0,00</strong></div>
+                        <div class="resumo-card"><span class="resumo-label">Patrimônio estimado</span><strong id="kpiPatrimonio" class="resumo-valor">R$ 0,00</strong></div>
+                        <div class="resumo-card"><span class="resumo-label">Taxa de poupança</span><strong id="kpiPoupanca" class="resumo-valor">0%</strong></div>
+                        <div class="resumo-card"><span class="resumo-label">Renda comprometida</span><strong id="kpiComprometimento" class="resumo-valor">0%</strong></div>
+                        <div class="resumo-card"><span class="resumo-label">Despesas fixas / renda</span><strong id="kpiFixasRenda" class="resumo-valor">0%</strong></div>
+                        <div class="resumo-card"><span class="resumo-label">Investimentos / renda</span><strong id="kpiInvestimentoRenda" class="resumo-valor">0%</strong></div>
+                        <div class="resumo-card"><span class="resumo-label">Reserva em meses</span><strong id="kpiReserva" class="resumo-valor">0</strong></div>
+                    </div>
+                    <div id="alertasFinanceiros" class="dashboard-alert-list" aria-live="polite"></div>
+                </section>
+
+                <section class="dashboard-section chart-card">
+                    <div class="chart-heading"><div><h2>Receitas e despesas</h2><p>Valores registrados nos últimos seis meses.</p></div></div>
+                    <div id="graficoReceitasDespesas" class="chart-svg-container" role="group" aria-label="Gráfico de receitas e despesas dos últimos seis meses"></div>
+                    <p class="report-note">Despesas refletem pagamentos registrados; compromissos futuros aparecem no planejamento.</p>
+                </section>
+
+                <section class="dashboard-section chart-card">
+                    <div class="chart-heading"><div><h2>Investimentos ao longo do tempo</h2><p>Aportes e resgates registrados nos últimos seis meses.</p></div></div>
+                    <div id="graficoInvestimentosDashboard" class="chart-svg-container" role="group" aria-label="Gráfico de aportes e resgates de investimentos"></div>
+                    <p class="report-note">O Argo ainda não registra cotações ou saldos patrimoniais históricos; este gráfico compara movimentações, não valorização de mercado.</p>
+                </section>
 
 
                 <!-- RECEITAS -->
@@ -243,7 +270,7 @@
     </div>
 
 
-    <div id="modalReceita" class="modal hidden"><div class="modal-content"><div class="modal-header"><h2>Registrar receita</h2><button id="btnFecharReceita" class="btn-fechar" type="button">×</button></div><form id="formReceita"><div class="form-group"><label for="descricaoReceita">Descrição</label><input id="descricaoReceita" type="text" placeholder="Ex.: Salário" required></div><div class="form-row"><div class="form-group"><label for="valorReceita">Valor</label><input id="valorReceita" type="number" min="0.01" step="0.01" required></div><div class="form-group"><label for="dataReceita">Data</label><input id="dataReceita" type="date" required></div></div><div class="form-group"><label for="contaReceita">Depositar em (opcional)</label><select id="contaReceita"><option value="">Registrar sem alterar saldo de conta</option></select></div><div class="form-actions"><button id="btnCancelarReceita" type="button" class="btn-cancelar">Cancelar</button><button type="submit">Salvar receita</button></div></form></div></div>    <script src="script.js"></script>
+    <div id="modalReceita" class="modal hidden"><div class="modal-content"><div class="modal-header"><h2>Registrar receita</h2><button id="btnFecharReceita" class="btn-fechar" type="button">×</button></div><form id="formReceita"><div class="form-group"><label for="descricaoReceita">Descrição</label><input id="descricaoReceita" type="text" placeholder="Ex.: Salário" required></div><div class="form-row"><div class="form-group"><label for="valorReceita">Valor</label><input id="valorReceita" type="number" min="0.01" step="0.01" required></div><div class="form-group"><label for="dataReceita">Data</label><input id="dataReceita" type="date" required></div></div><div class="form-group"><label for="contaReceita">Depositar em (opcional)</label><select id="contaReceita"><option value="">Registrar sem alterar saldo de conta</option></select></div><div class="form-actions"><button id="btnCancelarReceita" type="button" class="btn-cancelar">Cancelar</button><button type="submit">Salvar receita</button></div></form></div></div>    <script src="assets/js/script.js"></script><script src="assets/js/orcamento.js"></script>
 
 </body>
 

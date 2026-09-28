@@ -3,21 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/svg+xml" href="./favicon.svg">
-    <link rel="stylesheet" href="./style.css">
+    <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
+    <link rel="stylesheet" href="assets/css/style.css">
     <title>Financeiro - Calendário</title>
 </head>
 <body>
     <div class="app">
         <aside class="sidebar">
             <div class="logo">Financeiro</div>
-            <nav><a href="index.html">Visão geral</a><a href="contas.html">Contas</a><a href="cartoes.html">Cartões</a><a href="dividas.html">Dívidas</a><a href="calendario.html" class="active">Calendário</a><a href="emprestimos.html">Empréstimos</a><a href="investimentos.html">Investimentos</a><a href="relatorios.html">Relatórios</a><a href="ajuda.html">Ajuda</a></nav>
+            <nav><a href="index.html">Visão geral</a><a href="contas.html">Contas</a><a href="cartoes.html">Cartões</a><a href="dividas.html">Dívidas</a><a href="parcelamentos.html">Parcelamentos</a><a href="calendario.html" class="active">Calendário</a><a href="orcamento.html">Orçamento</a><a href="planejamento.html">Planejamento</a><a href="emprestimos.html">Empréstimos</a><a href="investimentos.html">Investimentos</a><a href="relatorios.html">Relatórios</a><a href="ajuda.html">Ajuda</a></nav>
         </aside>
         <main class="main">
             <section>
                 <header class="page-header">
-                    <div><h1>Calendário de dívidas</h1><p>Veja vencimentos, parcelas e valores previstos em cada dia.</p></div>
-                    <a class="button-link" href="dividas.html">Gerenciar dívidas</a>
+                    <div><h1>Calendário financeiro</h1><p>Veja entradas, despesas e compromissos por dia.</p></div>
+                    <div class="header-actions"><a class="button-link" href="planejamento.html">Fluxo de caixa e metas</a><a class="button-link" href="dividas.html">Gerenciar dívidas</a></div>
                 </header>
                 <div class="calendar-toolbar">
                     <button id="mesAnteriorCalendario" type="button" class="btn-cancelar" aria-label="Mês anterior">‹</button>
@@ -25,10 +25,20 @@
                     <button id="mesProximoCalendario" type="button" class="btn-cancelar" aria-label="Próximo mês">›</button>
                 </div>
                 <div id="resumoCalendario" class="resumo-grid monthly-debt-summary"></div>
-                <div id="gradeCalendarioDividas" class="calendar-grid" role="grid" aria-label="Calendário mensal de pagamentos"></div>
+                <fieldset class="calendar-filters"><legend>Mostrar no calendário</legend>
+                    <label><input type="checkbox" data-calendar-filter="receita" checked> Receitas</label>
+                    <label><input type="checkbox" data-calendar-filter="despesa" checked> Despesas</label>
+                    <label><input type="checkbox" data-calendar-filter="conta" checked> Contas e transferências</label>
+                    <label><input type="checkbox" data-calendar-filter="cartao" checked> Cartões</label>
+                    <label><input type="checkbox" data-calendar-filter="divida" checked> Dívidas</label>
+                    <label><input type="checkbox" data-calendar-filter="investimento" checked> Investimentos</label>
+                    <label><input type="checkbox" data-calendar-filter="emprestimo" checked> Empréstimos</label>
+                </fieldset>
+                <div id="gradeCalendarioDividas" class="calendar-grid" role="grid" aria-label="Calendário financeiro"></div>
+                <section id="detalhesDiaCalendario" class="calendar-day-details" aria-live="polite"><h2>Detalhes do dia</h2><p>Selecione um dia para ver seus eventos.</p></section>
             </section>
         </main>
     </div>
-                <div id="modalPagamentoCalendario" class="modal hidden"><div class="modal-content"><div class="modal-header"><h2>Registrar pagamento</h2><button id="btnFecharPagamentoCalendario" class="btn-fechar" type="button">×</button></div><form id="formPagamentoCalendario"><p id="infoPagamentoCalendario" class="report-note"></p><div class="form-group"><label for="valorPagamentoCalendario">Valor deste vencimento</label><input id="valorPagamentoCalendario" type="number" min="0.01" step="0.01" required></div><div class="form-group"><label for="contaPagamentoCalendario">Debitar de qual conta? (opcional)</label><select id="contaPagamentoCalendario"><option value="">Registrar sem alterar saldo</option></select></div><div class="form-group"><label for="dataPagamentoCalendario">Data do pagamento</label><input id="dataPagamentoCalendario" type="date" required></div><div class="form-actions"><button id="btnCancelarPagamentoCalendario" type="button" class="btn-cancelar">Cancelar</button><button type="submit">Salvar pagamento</button></div></form></div></div>    <script src="script.js"></script>
+                <div id="modalPagamentoCalendario" class="modal hidden"><div class="modal-content"><div class="modal-header"><h2>Registrar pagamento</h2><button id="btnFecharPagamentoCalendario" class="btn-fechar" type="button">×</button></div><form id="formPagamentoCalendario"><p id="infoPagamentoCalendario" class="report-note"></p><div class="form-group"><label for="valorPagamentoCalendario">Valor deste vencimento</label><input id="valorPagamentoCalendario" type="number" min="0.01" step="0.01" required></div><div class="form-group"><label for="contaPagamentoCalendario">Debitar de qual conta? (opcional)</label><select id="contaPagamentoCalendario"><option value="">Registrar sem alterar saldo</option></select></div><div class="form-group"><label for="dataPagamentoCalendario">Data do pagamento</label><input id="dataPagamentoCalendario" type="date" required></div><div class="form-actions"><button id="btnCancelarPagamentoCalendario" type="button" class="btn-cancelar">Cancelar</button><button type="submit">Salvar pagamento</button></div></form></div></div>    <script src="assets/js/script.js"></script>
 </body>
 </html>

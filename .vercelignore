@@ -1,5 +1,6 @@
 .git
 emprestimos.sql
+archive/legacy/
 *.sqlite3
 *.sqlite3-*
 *.db

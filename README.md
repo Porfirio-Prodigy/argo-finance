@@ -1,18 +1,39 @@
 # Argo Finance
 
-Aplicação web estática para organizar contas, cartões, dívidas e abatimentos, empréstimos e investimentos. Toda a lógica roda no navegador, e os registros ficam no `localStorage`.
+Aplicação estática de gestão financeira pessoal. O navegador executa a interface e guarda os registros em `localStorage`; o projeto não tem backend nem API.
 
-## Como abrir
+## Estrutura
 
-- Localmente: abra `index.html` no navegador.
-- Publicação: envie o projeto para uma hospedagem de sites estáticos, como a Vercel. O `vercel.json` publica os arquivos da pasta raiz sem etapa de build.
+```text
+/
+├── index.html                 # Entrada e dashboard
+├── ajuda.html                 # Guia para usuários
+├── contas.html                # Contas, histórico e conciliação
+├── dividas.html               # Despesas, pagamentos e recorrências
+├── cartoes.html               # Compras associadas a cartões
+├── parcelamentos.html         # Parcelas e antecipações
+├── calendario.html            # Eventos e vencimentos
+├── orcamento.html             # Limites por categoria
+├── planejamento.html          # Fluxo de caixa e metas
+├── emprestimos.html           # Valores emprestados e recebidos
+├── investimentos.html         # Aportes e resgates
+├── relatorios.html            # Relatórios para impressão/PDF
+├── assets/
+│   ├── css/style.css           # Estilos compartilhados
+│   ├── images/favicon.svg      # Ícone
+│   └── js/                     # Inicialização e lógica das telas
+└── archive/legacy/             # Arquivos antigos, não usados pelo app
+```
 
-Não é necessário instalar Node.js nem dependências.
+As páginas HTML permanecem na raiz para preservar os endereços diretos e a publicação estática. `vercel.json` publica essa raiz sem etapa de build.
 
-## Armazenamento
+## Abrir e publicar
 
-Os dados ficam no navegador e na origem (endereço) usados para abrir o app. Eles não são sincronizados entre dispositivos e podem ser apagados ao limpar os dados do navegador. Ao trocar o endereço de publicação, o navegador trata o `localStorage` como um espaço separado.
+- Localmente, abra `index.html` ou sirva a pasta com qualquer servidor de arquivos estáticos.
+- Na Vercel, publique o repositório com a configuração atual. Não há dependências para instalar ou comando de build.
 
-As telas de contas, cartões, dívidas, empréstimos e investimentos permitem excluir registros, com confirmação. Uma compra de cartão também é uma dívida; apagá-la remove também seus abatimentos.
+## Onde os dados ficam
 
-Os arquivos SQLite antigos não são usados nem importados automaticamente para o `localStorage`.
+Os dados são separados por navegador e endereço do site. As chaves principais do `localStorage` incluem `financeiro_contas`, `financeiro_dividas`, `financeiro_receitas`, `financeiro_investimentos`, `financeiro_emprestimos`, `financeiro_metas` e `financeiro_orcamentos`. O conteúdo não é sincronizado entre dispositivos.
+
+O banco SQLite e o SQL em `archive/legacy/` são referências antigas; o app não os lê nem importa automaticamente. Consulte [ajuda.html](ajuda.html) para o guia de funcionalidades, exemplos e limites atuais do sistema.

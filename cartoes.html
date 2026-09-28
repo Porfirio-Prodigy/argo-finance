@@ -2,18 +2,18 @@
 <html lang="pt-BR">
 
 <head>
-    <link rel="icon" type="image/svg+xml" href="./favicon.svg">
+    <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Financeiro - Cartões</title>
-    <link rel="stylesheet" href="./style.css">
+    <link rel="stylesheet" href="assets/css/style.css">
 </head>
 
 <body>
     <div class="app">
         <aside class="sidebar">
             <div class="logo">Financeiro</div>
-            <nav><a href="index.html">Visão geral</a><a href="contas.html">Contas</a><a href="cartoes.html" class="active">Cartões</a><a href="dividas.html">Dívidas</a><a href="calendario.html">Calendário</a><a href="emprestimos.html">Empréstimos</a><a href="investimentos.html">Investimentos</a><a href="relatorios.html">Relatórios</a><a href="ajuda.html">Ajuda</a></nav>
+            <nav><a href="index.html">Visão geral</a><a href="contas.html">Contas</a><a href="cartoes.html" class="active">Cartões</a><a href="dividas.html">Dívidas</a><a href="parcelamentos.html">Parcelamentos</a><a href="calendario.html">Calendário</a><a href="orcamento.html">Orçamento</a><a href="planejamento.html">Planejamento</a><a href="emprestimos.html">Empréstimos</a><a href="investimentos.html">Investimentos</a><a href="relatorios.html">Relatórios</a><a href="ajuda.html">Ajuda</a></nav>
         </aside>
         <main class="main">
             <section>
@@ -48,7 +48,7 @@
         </main>
     </div>
     <div id="modalAbatimentoCartao" class="modal hidden"><div class="modal-content"><div class="modal-header"><h2>Abater compra do cartão</h2><button id="btnFecharAbatimentoCartao" class="btn-fechar" type="button">×</button></div><form id="formAbatimentoCartao"><div class="form-group"><label for="dividaAbatimentoCartao">Compra / dívida</label><select id="dividaAbatimentoCartao" required></select></div><p id="saldoAbatimentoCartao" class="report-note"></p><div class="form-group"><label for="modoAbatimentoCartao">Como deseja abater?</label><select id="modoAbatimentoCartao"><option value="valor">Informar valor</option><option value="parcelas">Abater parcelas completas</option></select></div><div class="form-group"><label for="valorAbatimentoCartao">Valor</label><input id="valorAbatimentoCartao" type="number" min="0.01" step="0.01" required></div><div class="form-group hidden" id="grupoQtdAbatimentoCartao"><label for="qtdAbatimentoCartao">Quantidade de parcelas</label><input id="qtdAbatimentoCartao" type="number" min="1" step="1" value="1"></div><div class="form-group"><label for="contaAbatimentoCartao">Pagar usando esta conta (opcional)</label><select id="contaAbatimentoCartao"><option value="">Sem débito de conta</option></select></div><div class="form-group"><label for="dataAbatimentoCartao">Data do pagamento</label><input id="dataAbatimentoCartao" type="date" required></div><div class="form-actions"><button id="btnCancelarAbatimentoCartao" type="button" class="btn-cancelar">Cancelar</button><button type="submit">Confirmar abatimento</button></div></form></div></div>
-    <script src="script.js"></script>
+    <script src="assets/js/script.js"></script>
 </body>
 
 </html>

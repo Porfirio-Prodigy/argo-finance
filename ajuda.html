@@ -3,76 +3,124 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/svg+xml" href="./favicon.svg">
-    <link rel="stylesheet" href="./style.css">
-    <title>Financeiro - Ajuda</title>
+    <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <title>Ajuda · Financeiro</title>
 </head>
 <body>
     <div class="app">
         <aside class="sidebar">
             <div class="logo">Financeiro</div>
             <nav>
-                <a href="index.html">Visão geral</a>
-                <a href="contas.html">Contas</a>
-                <a href="cartoes.html">Cartões</a>
-                <a href="dividas.html">Dívidas</a>
-                <a href="calendario.html">Calendário</a>
-                <a href="emprestimos.html">Empréstimos</a>
-                <a href="investimentos.html">Investimentos</a>
-                <a href="relatorios.html">Relatórios</a>
-                <a href="ajuda.html" class="active">Ajuda</a>
+                <a href="index.html">Visão geral</a><a href="contas.html">Contas</a><a href="cartoes.html">Cartões</a>
+                <a href="dividas.html">Dívidas</a><a href="parcelamentos.html">Parcelamentos</a><a href="calendario.html">Calendário</a>
+                <a href="orcamento.html">Orçamento</a><a href="planejamento.html">Planejamento</a><a href="emprestimos.html">Empréstimos</a>
+                <a href="investimentos.html">Investimentos</a><a href="relatorios.html">Relatórios</a><a href="ajuda.html" class="active">Ajuda</a>
             </nav>
         </aside>
         <main class="main">
             <section class="help-page">
-                <header class="page-header">
-                    <div><h1>Como usar o Financeiro</h1><p>Orientações para cadastrar contas, dívidas e compras no cartão e acompanhar os pagamentos.</p></div>
-                </header>
+                <header class="page-header"><div><h1>Guia simples do Financeiro</h1><p>Um passo a passo para organizar contas, entender dívidas e planejar os próximos vencimentos.</p></div></header>
+                <div class="help-callout"><strong>Se você está começando:</strong> cadastre primeiro o saldo das suas contas, depois registre as dívidas e seus vencimentos. Por fim, confira o orçamento e o fluxo de caixa. Você pode começar só com essas etapas.</div>
+                <nav class="help-index" aria-label="Índice da ajuda">
+                    <a href="#primeiros-passos">Começar</a><a href="#movimentacoes">Contas e movimentações</a><a href="#despesas">Despesas recorrentes e dívidas</a>
+                    <a href="#orcamento">Orçamento</a><a href="#cartoes">Cartões e parcelas</a><a href="#calendario">Calendário</a>
+                    <a href="#planejamento">Fluxo de caixa e metas</a><a href="#patrimonio">Empréstimos e investimentos</a><a href="#analises">Dashboard e relatórios</a><a href="#dados">Dados e privacidade</a>
+                </nav>
 
-                <section class="help-section" id="ajuda-dividas">
-                    <h2>Dívidas e despesas</h2>
-                    <p>Use <a href="dividas.html">Dívidas</a> para registrar despesas recorrentes e compras parceladas. Cada registro pode ser abatido com um valor livre ou por uma ou mais parcelas completas.</p>
+                <section class="help-section" id="primeiros-passos">
+                    <h2>1. Comece com três passos</h2>
                     <ol>
-                        <li>Selecione o tipo: fixa, variável, assinatura ou gasto pontual.</li>
-                        <li>Informe o nome, o valor e a data de início ou da compra. Para gastos pontuais, informe também o número de parcelas.</li>
-                        <li>Escolha a forma de pagamento. Para compras em cartão, informe o cartão e, se necessário, o titular ou quem fez a compra.</li>
-                        <li>Salve. A lista separa o valor total original do valor mensal ou da parcela; também mostra quanto já foi pago e quantas parcelas faltam.</li>
+                        <li>Em <a href="contas.html">Contas</a>, registre o saldo atual de cada conta que usa.</li>
+                        <li>Em <a href="dividas.html">Dívidas</a>, cadastre despesas fixas, assinaturas, gastos variáveis importantes e compras parceladas.</li>
+                        <li>Abra <a href="calendario.html">Calendário</a> para conferir as datas e registrar pagamentos conforme eles acontecem.</li>
                     </ol>
-                    <div class="help-callout"><strong>Recorrentes:</strong> despesas fixas, variáveis e assinaturas voltam a vencer todos os meses a partir da data de início. Informe o dia de vencimento para posicioná-las no <a href="calendario.html">Calendário</a>.</div>
-                    <div class="help-callout"><strong>Gasto pontual parcelado:</strong> o número de parcelas define em quantos meses a compra aparece. O calendário mostra cada vencimento e quantas parcelas ainda faltam.</div>
-                    <h3>Abater uma dívida</h3>
-                    <p>Na tela de Dívidas, clique em <strong>Registrar pagamento</strong>. Escolha a dívida e então informe um valor ou selecione quantas parcelas completas quer pagar. Se o dinheiro saiu de uma conta cadastrada, escolha-a para atualizar o saldo automaticamente. Sem selecionar conta, o pagamento é registrado na dívida sem mexer nos saldos das contas.</p>
-                    <p>O calendário distingue parcelas <span class="payment-status is-paid">Paga</span>, <span class="payment-status is-partial">Pago parcial</span> e <span class="payment-status is-due">A pagar</span>.</p>
+                    <p>Exemplo: cadastre uma conta corrente com R$ 1.200 e a conta de internet de R$ 59,90, com vencimento todo dia 10. O Argo passa a mostrar esse compromisso nos meses seguintes.</p>
                 </section>
 
-                <section class="help-section" id="ajuda-contas">
-                    <h2>Contas</h2>
-                    <p>Em <a href="contas.html">Contas</a>, cadastre cada lugar onde mantém dinheiro, como conta corrente, conta salário, poupança ou carteira. O valor informado é o saldo inicial ou saldo atual daquela conta.</p>
-                    <p>Ao registrar um pagamento de dívida, escolha a conta de origem para descontar o valor pago. Use <strong>Transferir entre contas</strong> quando mover dinheiro entre contas próprias: informe origem, destino e valor. A transferência reduz um saldo e aumenta o outro, sem mudar o total disponível.</p>
+                <section class="help-section" id="movimentacoes">
+                    <h2>2. Contas, receitas e transferências</h2>
+                    <p>Uma conta representa um lugar onde você guarda dinheiro: conta corrente, poupança, carteira ou investimento. Informe o saldo atual para que os resumos e projeções comecem de um valor real.</p>
+                    <p>Na <a href="index.html">Visão geral</a>, use <strong>Registrar receita</strong> para anotar uma entrada. Se escolher uma conta, o saldo dela aumenta. Se não escolher, a receita fica registrada sem alterar saldos.</p>
+                    <p>Use <strong>Transferir entre contas</strong> quando mover dinheiro entre contas suas. Exemplo: transferir R$ 100 da conta corrente para a poupança reduz uma e aumenta a outra, sem contar como receita ou despesa.</p>
+                    <p>Em <a href="contas.html">Contas</a>, o histórico ajuda a conferir receitas, pagamentos e transferências. Escolha o mês para filtrar a lista.</p>
+                    <p>Se uma conta for do tipo <strong>Conta salário</strong>, informe quanto costuma receber e em qual dia. O Argo passa a incluir essa entrada mensal no calendário e no fluxo de caixa. Exemplo: R$ 3.500 no dia 5. É uma previsão: registre a receita quando o dinheiro cair para atualizar o saldo real da conta.</p>
                 </section>
 
-                <section class="help-section" id="ajuda-cartoes">
-                    <h2>Cartões</h2>
-                    <p>As compras de cartão são cadastradas em Dívidas: escolha cartão próprio ou de terceiros, informe o nome do cartão e o total da compra. Para uma compra parcelada, selecione <strong>Gasto pontual</strong> e indique a quantidade de parcelas.</p>
-                    <p>A aba <a href="cartoes.html">Cartões</a> reúne essas compras e mostra o total mensal previsto no mês escolhido. Use <strong>Abater compra / parcela</strong> ou o botão <strong>Abater</strong> ao lado de uma compra para informar um valor ou pagar parcelas completas, com débito opcional de uma conta.</p>
-                    <p>Os pagamentos ficam associados à mesma dívida, então o saldo e as parcelas restantes também são atualizados na tela de Dívidas e no calendário.</p>
+                <section class="help-section" id="despesas">
+                    <h2>3. Despesas recorrentes, pontuais e dívidas</h2>
+                    <p>Em <a href="dividas.html">Dívidas</a>, escolha o tipo que melhor descreve o compromisso:</p>
+                    <ul>
+                        <li><strong>Fixa:</strong> valor geralmente igual, como aluguel de R$ 900.</li>
+                        <li><strong>Variável:</strong> muda conforme o uso, como energia elétrica.</li>
+                        <li><strong>Assinatura:</strong> serviço cobrado periodicamente, como streaming de R$ 35.</li>
+                        <li><strong>Pontual:</strong> compra ou dívida com número definido de parcelas.</li>
+                    </ul>
+                    <p>Para despesas recorrentes, informe o início, o dia de vencimento, a categoria e, se quiser, a conta usada para pagar e uma data final. A periodicidade atual é mensal. Você pode editar a série inteira, pausar, retomar ou cancelar os próximos vencimentos. No calendário, <strong>Editar ocorrência</strong> muda apenas aquele vencimento.</p>
+                    <p>Em <strong>Forma de pagamento</strong>, escolha cartão próprio, cartão de terceiros, Pix, boleto ou dinheiro/físico. Para boleto, escolha essa opção ao cadastrar a despesa; ela também fica disponível no filtro e nos detalhes dos registros.</p>
+                    <p>Para registrar um pagamento, use <strong>Registrar pagamento</strong> na tela de Dívidas ou <strong>Pagar</strong> no Calendário. Exemplo: de uma conta de luz de R$ 145, pague R$ 100 agora e registre os R$ 100; o saldo de R$ 45 continuará em aberto. Se escolher a conta de origem, o Argo também desconta o pagamento do saldo dela.</p>
+                    <p>Associe uma categoria aos gastos, como Moradia, Alimentação ou Transporte. Essa categoria é usada no orçamento e no gráfico de despesas.</p>
                 </section>
 
-                <section class="help-section">
-                    <h2>Histórico e resumo do mês</h2>
-                    <p>Em <a href="contas.html">Contas</a>, o histórico reúne pagamentos, transferências e receitas com data, valor e conta de origem ou destino. Filtre por mês para conferir as movimentações.</p>
-                    <p>Na Visão geral, escolha o mês e use <strong>Registrar receita</strong> para lançar entradas. Se selecionar uma conta de depósito, o saldo dela aumenta e a receita aparece no histórico. O resumo compara receitas, despesas previstas, pagamentos, compromissos em aberto e saldo projetado.</p>
-                    <p>No <a href="calendario.html">Calendário</a>, use <strong>Pagar</strong> em um vencimento para registrar o valor total ou parcial e, opcionalmente, debitar uma conta. Para recorrências, cada mês tem seu próprio vencimento.</p>
+                <section class="help-section" id="orcamento">
+                    <h2>4. Orçamento por categoria</h2>
+                    <p>Em <a href="orcamento.html">Orçamento</a>, defina quanto pretende gastar em cada categoria. O realizado soma pagamentos registrados em despesas que tenham a mesma categoria.</p>
+                    <p>Exemplo: crie Alimentação com limite de R$ 500. Se já registrou R$ 320 em pagamentos dessa categoria, a tela mostra R$ 180 disponíveis e 64% utilizados. Com R$ 230 gastos em um limite de Lazer de R$ 200, o orçamento aparece excedido em R$ 30.</p>
+                    <ul>
+                        <li><strong>Mensal:</strong> vale para o mês escolhido.</li>
+                        <li><strong>Anual:</strong> compara o limite do ano com pagamentos registrados naquele ano.</li>
+                        <li><strong>Recorrente:</strong> repete o limite mensal a partir do mês inicial.</li>
+                    </ul>
+                    <p>Para reaproveitar os mesmos limites, escolha o mês de origem e use <strong>Copiar mês para...</strong>. Informe o mês de destino no formato AAAA-MM, por exemplo 2026-10. A cópia substitui os limites mensais que já existirem no destino após sua confirmação.</p>
+                    <p>Pagamentos não registrados ainda não entram no realizado. Registre o pagamento e mantenha a categoria preenchida na despesa para que os valores apareçam corretamente.</p>
                 </section>
 
-                <section class="help-section">
-                    <h2>Calendário e visão mensal</h2>
-                    <p>O calendário mostra vencimentos recorrentes em todos os meses e cada parcela de uma compra pontual no mês correspondente. Navegue entre meses para consultar o previsto, o pago e o que falta pagar.</p>
-                    <p>Na tela de Dívidas e na de Cartões, use o filtro de mês para consultar os valores mensais previstos e os abatimentos daquele período.</p>
+                <section class="help-section" id="cartoes">
+                    <h2>5. Cartões e compras parceladas</h2>
+                    <p>Cadastre a compra em <a href="dividas.html">Dívidas</a> como gasto pontual e informe o total, o número de parcelas, a categoria e os dados do cartão. Exemplo: notebook de R$ 3.600 em 12 parcelas gera parcelas mensais de R$ 300.</p>
+                    <p>Em <a href="parcelamentos.html">Parcelamentos</a>, veja vencimento, número, valor e status de cada parcela. Use <strong>Antecipar parcelas</strong> para registrar parcelas futuras como pagas. Escolher uma conta desconta o valor dela; sem conta, o pagamento fica registrado sem alterar saldos.</p>
+                    <p>A tela <a href="cartoes.html">Cartões</a> reúne compras no cartão e seus compromissos mensais. O Argo não importa faturas automaticamente: mantenha os valores e pagamentos atualizados.</p>
+                    <p>Se a compra ja estava em andamento antes de usar o Argo, informe quantas parcelas foram pagas. Exemplo: numa compra de 10 parcelas em que 3 ja foram pagas, informe 3; o Argo mostrara 7 restantes sem criar pagamentos antigos.</p>
+                    <p>Na tela de Parcelamentos, filtre por pessoa ou cartao para separar responsabilidades. Ao cadastrar compras feitas juntas, use o mesmo nome em "Agrupar com outras compras"; elas aparecem sob um grupo, mas cada compra continua com suas parcelas e saldo separados. No campo "Nome da compra na fatura", copie a descricao exibida pelo cartao para localizar o lancamento.</p>
+                </section>
+
+
+                <section class="help-section" id="calendario">
+                    <h2>6. Calendário financeiro</h2>
+                    <p>O <a href="calendario.html">Calendário</a> junta vencimentos de despesas e parcelas com receitas, empréstimos e investimentos cadastrados. Use os filtros para reduzir os eventos mostrados e selecione um dia para ver os detalhes.</p>
+                    <p>Exemplo: selecione o dia 10 para ver internet, energia e parcelas que vencem nessa data. Use <strong>Pagar</strong> para registrar um pagamento. Em recorrências, você também pode editar só aquela ocorrência.</p>
+                </section>
+
+                <section class="help-section" id="planejamento">
+                    <h2>7. Fluxo de caixa futuro e metas</h2>
+                    <p>Em <a href="planejamento.html">Planejamento</a>, cadastre a renda mensal esperada e configure o valor e o próximo vencimento de cada parcela de empréstimo. Escolha a previsão de 7, 30, 60 ou 90 dias, ou até 6 ou 12 meses.</p>
+                    <p>Exemplo: saldo atual de R$ 2.500, salário previsto de R$ 4.000 e despesas futuras de R$ 680 resultam em saldo projetado de R$ 5.820. Uma projeção abaixo de zero gera um alerta. A previsão depende das datas e valores cadastrados e não movimenta suas contas.</p>
+                    <p>Na mesma página, crie várias metas. Para uma reserva de R$ 10.000 com R$ 7.200 atuais, o progresso é 72% e faltam R$ 2.800. Informe prazo e aporte mensal para ver uma estimativa de conclusão.</p>
+                </section>
+
+                <section class="help-section" id="patrimonio">
+                    <h2>8. Empréstimos, investimentos e conciliação</h2>
+                    <p>Em <a href="emprestimos.html">Empréstimos</a>, registre dinheiro que emprestou ou pegou emprestado e atualize os pagamentos recebidos ou feitos. Se houver parcelas, informe o próximo vencimento no Planejamento para incluí-las na projeção.</p>
+                    <p>No cadastro de emprestimos, informe parcelas e valor mensal combinado para acompanhar o que falta receber e a previsao mensal. Em "Registrar pagamento", escolha informar um valor ou registrar parcelas; ao selecionar uma conta, recebimentos aumentam o saldo dela e pagamentos de emprestimo reduzem o saldo. Exemplo: receber 2 parcelas de R$ 150 adiciona R$ 300 a conta escolhida.</p>
+                    <p>Em <a href="investimentos.html">Investimentos</a>, registre aportes e resgates. Esses lançamentos alimentam o histórico de movimentações, mas não atualizam cotações de mercado automaticamente.</p>
+                    <p>Em <a href="contas.html">Contas</a>, use a conciliação para comparar o saldo informado pelo banco com o saldo cadastrado no Argo. Exemplo: Banco R$ 2.450 e Argo R$ 2.380 deixam uma diferença de R$ 70 para investigar. Confira pagamentos e receitas que não foram lançados ou cuja conta não foi selecionada. <strong>Conciliado</strong> significa que os saldos conferem; <strong>pendente</strong> indica que a conferência ainda não foi concluída; <strong>divergente</strong> significa que os valores ainda não batem.</p>
+                </section>
+
+                <section class="help-section" id="analises">
+                    <h2>9. Visão geral, alertas e relatórios</h2>
+                    <p>A <a href="index.html">Visão geral</a> resume saldos, despesas, empréstimos, orçamento e indicadores. Os alertas podem avisar sobre limite de categoria excedido, vencimentos próximos, saldo projetado negativo, parcelas em aberto, variação de gastos e metas atrasadas.</p>
+                    <p>O gráfico de receitas e despesas compara registros dos últimos seis meses; o gráfico de categorias detalha pagamentos por categoria. O gráfico de investimentos compara aportes e resgates. Os indicadores são estimativas baseadas nos dados cadastrados.</p>
+                    <p>Em <a href="relatorios.html">Relatórios</a>, escolha período e seções para gerar uma versão de impressão que pode ser salva como PDF pelo navegador.</p>
+                </section>
+
+                <section class="help-section" id="dados">
+                    <h2>10. Onde ficam os dados e o que o sistema não faz</h2>
+                    <p>Os dados ficam neste navegador e neste endereço do Argo. Não são sincronizados automaticamente entre dispositivos. Limpar os dados do navegador pode apagar os registros; o relatório para impressão não é uma cópia de segurança restaurável.</p>
+                    <p>O Argo não acessa sua conta bancária, não importa faturas e não paga contas automaticamente. Receitas, pagamentos, saldos e vencimentos precisam ser informados por você. O calendário e o fluxo de caixa organizam esses dados e ajudam a antecipar compromissos.</p>
                 </section>
             </section>
         </main>
     </div>
-    <script src="script.js"></script>
+    <script src="assets/js/script.js"></script>
 </body>
 </html>
