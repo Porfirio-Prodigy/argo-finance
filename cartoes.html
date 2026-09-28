@@ -2,40 +2,38 @@
 <html lang="pt-BR">
 
 <head>
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Financeiro - Cart&#245;es</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Financeiro - Cartões</title>
+    <link rel="stylesheet" href="./style.css">
 </head>
 
 <body>
     <div class="app">
         <aside class="sidebar">
             <div class="logo">Financeiro</div>
-            <nav><a href="index.html">Vis&#227;o geral</a><a href="contas.html">Contas</a><a href="cartoes.html"
-                    class="active">Cart&#245;es</a><a href="dividas.html">D&#237;vidas</a><a
-                    href="emprestimos.html">Empr&#233;stimos</a><a href="investimentos.html">Investimentos</a><a href="relatorios.html">Relat&#243;rios</a></nav>
+            <nav><a href="index.html">Visão geral</a><a href="contas.html">Contas</a><a href="cartoes.html" class="active">Cartões</a><a href="dividas.html">Dívidas</a><a href="calendario.html">Calendário</a><a href="emprestimos.html">Empréstimos</a><a href="investimentos.html">Investimentos</a><a href="relatorios.html">Relatórios</a><a href="ajuda.html">Ajuda</a></nav>
         </aside>
         <main class="main">
             <section>
                 <header class="page-header">
                     <div>
-                        <h1>Cart&#245;es</h1>
-                        <p>Acompanhe as compras no seu cart&#227;o e nos cart&#245;es de outras pessoas.</p>
-                    </div><a class="button-link" href="dividas.html">Registrar compra</a>
+                        <h1>Cartões</h1>
+                        <p>Acompanhe as compras no seu cartão e nos cartões de outras pessoas.</p>
+                    </div><div class="header-actions"><button id="btnAbaterCartao" class="btn-cancelar" type="button">Abater compra / parcela</button><a class="button-link" href="dividas.html">Registrar compra</a></div>
                 </header>
                 <div class="filtros-tabela"><input id="filtroMesCartoes" type="month"
-                        aria-label="Filtrar por m&#234;s"><select id="filtroDonoCartoes">
-                        <option value="">Cart&#245;es pr&#243;prios e de terceiros</option>
-                        <option value="cartao_proprio">Meu cart&#227;o</option>
-                        <option value="cartao_terceiros">Cart&#227;o de terceiros</option>
+                        aria-label="Filtrar por mês"><select id="filtroDonoCartoes">
+                        <option value="">Cartões próprios e de terceiros</option>
+                        <option value="cartao_proprio">Meu cartão</option>
+                        <option value="cartao_terceiros">Cartão de terceiros</option>
                     </select><select id="filtroPessoaCartoes">
                         <option value="">Compras minhas e de outras pessoas</option>
                         <option value="eu">Compras minhas</option>
                         <option value="outra_pessoa">Compras de outras pessoas</option>
                     </select><input id="filtroBuscaCartoes" type="search"
-                        placeholder="Buscar cart&#227;o, pessoa ou compra"></div>
+                        placeholder="Buscar cartão, pessoa ou compra"></div>
                 <div id="resumoCartoes" class="resumo-grid"></div>
                 <div class="chart-card">
                     <div class="chart-heading">
@@ -49,6 +47,7 @@
             </section>
         </main>
     </div>
+    <div id="modalAbatimentoCartao" class="modal hidden"><div class="modal-content"><div class="modal-header"><h2>Abater compra do cartão</h2><button id="btnFecharAbatimentoCartao" class="btn-fechar" type="button">×</button></div><form id="formAbatimentoCartao"><div class="form-group"><label for="dividaAbatimentoCartao">Compra / dívida</label><select id="dividaAbatimentoCartao" required></select></div><p id="saldoAbatimentoCartao" class="report-note"></p><div class="form-group"><label for="modoAbatimentoCartao">Como deseja abater?</label><select id="modoAbatimentoCartao"><option value="valor">Informar valor</option><option value="parcelas">Abater parcelas completas</option></select></div><div class="form-group"><label for="valorAbatimentoCartao">Valor</label><input id="valorAbatimentoCartao" type="number" min="0.01" step="0.01" required></div><div class="form-group hidden" id="grupoQtdAbatimentoCartao"><label for="qtdAbatimentoCartao">Quantidade de parcelas</label><input id="qtdAbatimentoCartao" type="number" min="1" step="1" value="1"></div><div class="form-group"><label for="contaAbatimentoCartao">Pagar usando esta conta (opcional)</label><select id="contaAbatimentoCartao"><option value="">Sem débito de conta</option></select></div><div class="form-group"><label for="dataAbatimentoCartao">Data do pagamento</label><input id="dataAbatimentoCartao" type="date" required></div><div class="form-actions"><button id="btnCancelarAbatimentoCartao" type="button" class="btn-cancelar">Cancelar</button><button type="submit">Confirmar abatimento</button></div></form></div></div>
     <script src="script.js"></script>
 </body>
 

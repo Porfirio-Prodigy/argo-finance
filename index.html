@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 
 <head>
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg">
 
     <meta charset="UTF-8">
 
@@ -15,7 +15,7 @@
 
     <link
         rel="stylesheet"
-        href="style.css"
+        href="./style.css"
     >
 
 </head>
@@ -32,36 +32,7 @@
                 Financeiro
             </div>
 
-            <nav>
-
-                <a
-                    href="index.html"
-                    class="active"
-                >
-                    Visão geral
-                </a>
-
-                <a href="contas.html">
-                    Contas
-                </a>
-
-                <a href="cartoes.html">
-                    Cartões
-                </a>
-
-                <a href="dividas.html">
-                    Dívidas
-                </a>
-
-                <a href="emprestimos.html">
-                    Empréstimos
-                </a>
-
-                <a href="investimentos.html">
-                    Investimentos
-                </a>
-
-            <a href="relatorios.html">Relat&#243;rios</a></nav>
+            <nav><a href="index.html" class="active">Visão geral</a><a href="contas.html">Contas</a><a href="cartoes.html">Cartões</a><a href="dividas.html">Dívidas</a><a href="calendario.html">Calendário</a><a href="emprestimos.html">Empréstimos</a><a href="investimentos.html">Investimentos</a><a href="relatorios.html">Relatórios</a><a href="ajuda.html">Ajuda</a></nav>
 
         </aside>
 
@@ -86,7 +57,7 @@
 
                     </div>
 
-                    <a class="button-link" href="relatorios.html">Gerar relat&#243;rio PDF</a>
+                    <a class="button-link" href="relatorios.html">Gerar relatório PDF</a>
 
                 </header>
 
@@ -247,8 +218,18 @@
                     <div id="detalheGraficoDespesas" class="chart-detail" aria-live="polite">Passe o cursor sobre uma barra para ver o valor; clique para detalhar as despesas.</div>
                 </section>
 
-                <section class="dashboard-section">
-                    <h2>Empr&#233;stimos em aberto</h2>
+                <section class="dashboard-section monthly-finance-section">
+                    <div class="chart-heading"><div><h2>Resumo financeiro mensal</h2><p>Receitas, despesas e projeção baseada nos saldos atuais das contas.</p></div><div class="monthly-actions"><label for="mesResumoFinanceiro">Mês <input id="mesResumoFinanceiro" type="month"></label><button id="btnNovaReceita" type="button">Registrar receita</button></div></div>
+                    <div class="resumo-grid monthly-finance-grid">
+                        <div class="resumo-card"><span class="resumo-label">Receitas registradas</span><strong id="receitasMes" class="resumo-valor">R$ 0,00</strong></div>
+                        <div class="resumo-card"><span class="resumo-label">Despesas previstas</span><strong id="despesasPrevistasMes" class="resumo-valor">R$ 0,00</strong></div>
+                        <div class="resumo-card"><span class="resumo-label">Despesas pagas</span><strong id="despesasPagasMes" class="resumo-valor">R$ 0,00</strong></div>
+                        <div class="resumo-card"><span class="resumo-label">Compromissos em aberto</span><strong id="despesasEmAbertoMes" class="resumo-valor">R$ 0,00</strong></div>
+                        <div class="resumo-card monthly-debt-total"><span class="resumo-label">Saldo projetado após compromissos</span><strong id="saldoProjetadoMes" class="resumo-valor">R$ 0,00</strong></div>
+                    </div>
+                    <p class="report-note">Estimativa: saldo atual das contas, mais receitas sem depósito, menos compromissos em aberto. Receitas depositadas em conta já estão no saldo atual.</p>
+                </section>                <section class="dashboard-section">
+                    <h2>Empréstimos em aberto</h2>
                     <div class="resumo-grid">
                         <div class="resumo-card"><span class="resumo-label">Tenho a pagar</span><strong id="emprestimosAPagar" class="resumo-valor">R$ 0,00</strong><p>Valores que peguei emprestado</p></div>
                         <div class="resumo-card"><span class="resumo-label">Tenho a receber</span><strong id="emprestimosAReceber" class="resumo-valor">R$ 0,00</strong><p>Valores que emprestei</p></div>
@@ -262,7 +243,7 @@
     </div>
 
 
-    <script src="script.js"></script>
+    <div id="modalReceita" class="modal hidden"><div class="modal-content"><div class="modal-header"><h2>Registrar receita</h2><button id="btnFecharReceita" class="btn-fechar" type="button">×</button></div><form id="formReceita"><div class="form-group"><label for="descricaoReceita">Descrição</label><input id="descricaoReceita" type="text" placeholder="Ex.: Salário" required></div><div class="form-row"><div class="form-group"><label for="valorReceita">Valor</label><input id="valorReceita" type="number" min="0.01" step="0.01" required></div><div class="form-group"><label for="dataReceita">Data</label><input id="dataReceita" type="date" required></div></div><div class="form-group"><label for="contaReceita">Depositar em (opcional)</label><select id="contaReceita"><option value="">Registrar sem alterar saldo de conta</option></select></div><div class="form-actions"><button id="btnCancelarReceita" type="button" class="btn-cancelar">Cancelar</button><button type="submit">Salvar receita</button></div></form></div></div>    <script src="script.js"></script>
 
 </body>
 

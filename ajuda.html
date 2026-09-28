@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg">
+    <link rel="stylesheet" href="./style.css">
+    <title>Financeiro - Ajuda</title>
+</head>
+<body>
+    <div class="app">
+        <aside class="sidebar">
+            <div class="logo">Financeiro</div>
+            <nav>
+                <a href="index.html">Visão geral</a>
+                <a href="contas.html">Contas</a>
+                <a href="cartoes.html">Cartões</a>
+                <a href="dividas.html">Dívidas</a>
+                <a href="calendario.html">Calendário</a>
+                <a href="emprestimos.html">Empréstimos</a>
+                <a href="investimentos.html">Investimentos</a>
+                <a href="relatorios.html">Relatórios</a>
+                <a href="ajuda.html" class="active">Ajuda</a>
+            </nav>
+        </aside>
+        <main class="main">
+            <section class="help-page">
+                <header class="page-header">
+                    <div><h1>Como usar o Financeiro</h1><p>Orientações para cadastrar contas, dívidas e compras no cartão e acompanhar os pagamentos.</p></div>
+                </header>
+
+                <section class="help-section" id="ajuda-dividas">
+                    <h2>Dívidas e despesas</h2>
+                    <p>Use <a href="dividas.html">Dívidas</a> para registrar despesas recorrentes e compras parceladas. Cada registro pode ser abatido com um valor livre ou por uma ou mais parcelas completas.</p>
+                    <ol>
+                        <li>Selecione o tipo: fixa, variável, assinatura ou gasto pontual.</li>
+                        <li>Informe o nome, o valor e a data de início ou da compra. Para gastos pontuais, informe também o número de parcelas.</li>
+                        <li>Escolha a forma de pagamento. Para compras em cartão, informe o cartão e, se necessário, o titular ou quem fez a compra.</li>
+                        <li>Salve. A lista separa o valor total original do valor mensal ou da parcela; também mostra quanto já foi pago e quantas parcelas faltam.</li>
+                    </ol>
+                    <div class="help-callout"><strong>Recorrentes:</strong> despesas fixas, variáveis e assinaturas voltam a vencer todos os meses a partir da data de início. Informe o dia de vencimento para posicioná-las no <a href="calendario.html">Calendário</a>.</div>
+                    <div class="help-callout"><strong>Gasto pontual parcelado:</strong> o número de parcelas define em quantos meses a compra aparece. O calendário mostra cada vencimento e quantas parcelas ainda faltam.</div>
+                    <h3>Abater uma dívida</h3>
+                    <p>Na tela de Dívidas, clique em <strong>Registrar pagamento</strong>. Escolha a dívida e então informe um valor ou selecione quantas parcelas completas quer pagar. Se o dinheiro saiu de uma conta cadastrada, escolha-a para atualizar o saldo automaticamente. Sem selecionar conta, o pagamento é registrado na dívida sem mexer nos saldos das contas.</p>
+                    <p>O calendário distingue parcelas <span class="payment-status is-paid">Paga</span>, <span class="payment-status is-partial">Pago parcial</span> e <span class="payment-status is-due">A pagar</span>.</p>
+                </section>
+
+                <section class="help-section" id="ajuda-contas">
+                    <h2>Contas</h2>
+                    <p>Em <a href="contas.html">Contas</a>, cadastre cada lugar onde mantém dinheiro, como conta corrente, conta salário, poupança ou carteira. O valor informado é o saldo inicial ou saldo atual daquela conta.</p>
+                    <p>Ao registrar um pagamento de dívida, escolha a conta de origem para descontar o valor pago. Use <strong>Transferir entre contas</strong> quando mover dinheiro entre contas próprias: informe origem, destino e valor. A transferência reduz um saldo e aumenta o outro, sem mudar o total disponível.</p>
+                </section>
+
+                <section class="help-section" id="ajuda-cartoes">
+                    <h2>Cartões</h2>
+                    <p>As compras de cartão são cadastradas em Dívidas: escolha cartão próprio ou de terceiros, informe o nome do cartão e o total da compra. Para uma compra parcelada, selecione <strong>Gasto pontual</strong> e indique a quantidade de parcelas.</p>
+                    <p>A aba <a href="cartoes.html">Cartões</a> reúne essas compras e mostra o total mensal previsto no mês escolhido. Use <strong>Abater compra / parcela</strong> ou o botão <strong>Abater</strong> ao lado de uma compra para informar um valor ou pagar parcelas completas, com débito opcional de uma conta.</p>
+                    <p>Os pagamentos ficam associados à mesma dívida, então o saldo e as parcelas restantes também são atualizados na tela de Dívidas e no calendário.</p>
+                </section>
+
+                <section class="help-section">
+                    <h2>Histórico e resumo do mês</h2>
+                    <p>Em <a href="contas.html">Contas</a>, o histórico reúne pagamentos, transferências e receitas com data, valor e conta de origem ou destino. Filtre por mês para conferir as movimentações.</p>
+                    <p>Na Visão geral, escolha o mês e use <strong>Registrar receita</strong> para lançar entradas. Se selecionar uma conta de depósito, o saldo dela aumenta e a receita aparece no histórico. O resumo compara receitas, despesas previstas, pagamentos, compromissos em aberto e saldo projetado.</p>
+                    <p>No <a href="calendario.html">Calendário</a>, use <strong>Pagar</strong> em um vencimento para registrar o valor total ou parcial e, opcionalmente, debitar uma conta. Para recorrências, cada mês tem seu próprio vencimento.</p>
+                </section>
+
+                <section class="help-section">
+                    <h2>Calendário e visão mensal</h2>
+                    <p>O calendário mostra vencimentos recorrentes em todos os meses e cada parcela de uma compra pontual no mês correspondente. Navegue entre meses para consultar o previsto, o pago e o que falta pagar.</p>
+                    <p>Na tela de Dívidas e na de Cartões, use o filtro de mês para consultar os valores mensais previstos e os abatimentos daquele período.</p>
+                </section>
+            </section>
+        </main>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

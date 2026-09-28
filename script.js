@@ -77,12 +77,16 @@ function carregarVisaoGeral() {
     const dividas = JSON.parse(localStorage.getItem("financeiro_dividas") || "[]");
     const somarTipo = tipo => dividas
         .filter(divida => (divida.tipo || "pontual") === tipo)
-        .reduce((total, divida) => total + Math.max(0, Number(divida.valor || 0) - (divida.pagamentos || []).reduce((soma, pagamento) => soma + Number(pagamento.valor || 0), 0)), 0);
+        .reduce((total, divida) => total + (tipo === "pontual"
+            ? Math.max(0, Number(divida.valor || 0) - (divida.pagamentos || []).reduce((soma, pagamento) => soma + Number(pagamento.valor || 0), 0))
+            : Number(divida.valor || 0)), 0);
     const dividasFixas = somarTipo("fixa");
     const dividasVariaveis = somarTipo("variavel");
     const assinaturas = somarTipo("assinatura");
     const gastosPontuais = somarTipo("pontual");
-    const dividasTotais = dividas.reduce((total, divida) => total + Math.max(0, Number(divida.valor || 0) - (divida.pagamentos || []).reduce((soma, pagamento) => soma + Number(pagamento.valor || 0), 0)), 0);
+    const dividasTotais = dividas.reduce((total, divida) => total + ((divida.tipo || "pontual") === "pontual"
+        ? Math.max(0, Number(divida.valor || 0) - (divida.pagamentos || []).reduce((soma, pagamento) => soma + Number(pagamento.valor || 0), 0))
+        : Number(divida.valor || 0)), 0);
     const emprestimos = JSON.parse(localStorage.getItem("financeiro_emprestimos") || "[]");
     const saldoEmprestimos = direcao => emprestimos
         .filter(item => item.direcao === direcao)
@@ -172,8 +176,17 @@ function carregarVisaoGeral() {
     if (emprestimosAPagar) emprestimosAPagar.textContent = formatarMoeda(saldoEmprestimos("recebi"));
     const emprestimosAReceber = document.getElementById("emprestimosAReceber");
     if (emprestimosAReceber) emprestimosAReceber.textContent = formatarMoeda(saldoEmprestimos("emprestei"));
+    atualizarResumoFinanceiroMensal();
+    if (typeof window.atualizarGraficoDespesas === "function") window.atualizarGraficoDespesas();
 
 }
+
+function dataAtualISO() {
+    const hoje = new Date();
+    return `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, "0")}-${String(hoje.getDate()).padStart(2, "0")}`;
+}
+
+let renderizarMovimentacoes = () => {};
 
 
 // =========================
@@ -210,6 +223,34 @@ function iniciarContas() {
 
     const btnSalvarConta =
         document.getElementById("btnSalvarConta");
+
+    const modalTransferencia = document.getElementById("modalTransferencia");
+    if (modalTransferencia) {
+        const formTransferencia = document.getElementById("formTransferencia");
+        const selectOrigem = document.getElementById("contaOrigemTransferencia");
+        const selectDestino = document.getElementById("contaDestinoTransferencia");
+        const fechar = () => { modalTransferencia.classList.add("hidden"); formTransferencia.reset(); };
+        document.getElementById("btnTransferirConta").addEventListener("click", () => {
+            if (contas.length < 2) { alert("Cadastre pelo menos duas contas para transferir."); return; }
+            const opcoes = contas.map(c => `<option value="${escaparHtml(c.id)}">${escaparHtml(c.nome)} — ${formatarMoeda(c.valor)}</option>`).join("");
+            selectOrigem.innerHTML = opcoes; selectDestino.innerHTML = opcoes; selectDestino.selectedIndex = 1;
+            document.getElementById("dataTransferencia").value = dataAtualISO();
+            modalTransferencia.classList.remove("hidden");
+        });
+        ["btnFecharTransferencia", "btnCancelarTransferencia"].forEach(id => document.getElementById(id).addEventListener("click", fechar));
+        formTransferencia.addEventListener("submit", event => {
+            event.preventDefault();
+            const origem = contas.find(c => String(c.id) === selectOrigem.value), destino = contas.find(c => String(c.id) === selectDestino.value);
+            const valor = Number(document.getElementById("valorTransferencia").value);
+            const data = document.getElementById("dataTransferencia").value;
+            if (!origem || !destino || origem === destino || valor <= 0 || valor > Number(origem.valor || 0) || !data) { alert("Escolha contas diferentes e um valor disponivel na conta de origem."); return; }
+            const transferencias = JSON.parse(localStorage.getItem("financeiro_transferencias") || "[]");
+            transferencias.push({ id: crypto.randomUUID(), data, valor, origemId: origem.id, origemNome: origem.nome, destinoId: destino.id, destinoNome: destino.nome });
+            localStorage.setItem("financeiro_transferencias", JSON.stringify(transferencias));
+            origem.valor = Number(origem.valor || 0) - valor; destino.valor = Number(destino.valor || 0) + valor;
+            salvarContas(contas); renderizarContas(); carregarVisaoGeral(); renderizarMovimentacoes(); fechar();
+        });
+    }
 
 
     // =========================
@@ -605,22 +646,63 @@ function iniciarDividas() {
     const diaVencimentoInput = document.getElementById("diaVencimentoDivida");
     const grupoDiaVencimento = document.getElementById("grupoDiaVencimento");
 
+    if (filtroMes && !filtroMes.value) {
+        const agora = new Date();
+        filtroMes.value = `${agora.getFullYear()}-${String(agora.getMonth() + 1).padStart(2, "0")}`;
+    }
+
     const modalPagamento = document.getElementById("modalPagamentoDivida");
     const formPagamento = document.getElementById("formPagamentoDivida");
     const selectDividaPagamento = document.getElementById("dividaPagamento");
     const inputValorPagamento = document.getElementById("valorPagamentoDivida");
     const inputDataPagamento = document.getElementById("dataPagamentoDivida");
+    const tipoAbatimento = document.getElementById("tipoAbatimentoDivida");
+    const quantidadeParcelas = document.getElementById("quantidadeParcelasAbatimento");
+    const grupoQuantidadeParcelas = document.getElementById("grupoQuantidadeParcelasAbatimento");
+    const selectContaPagamento = document.getElementById("contaPagamentoDivida");
     const saldoPagamento = document.getElementById("saldoPagamentoDivida");
     const totalPago = divida => (divida.pagamentos || []).reduce((soma, pagamento) => soma + Number(pagamento.valor || 0), 0);
-    const saldoDevedor = divida => Math.max(0, Number(divida.valor || 0) - totalPago(divida));
+    const saldoDevedor = divida => {
+        if ((divida.tipo || "pontual") !== "pontual") {
+            const agora = new Date();
+            const mesAtual = `${agora.getFullYear()}-${String(agora.getMonth() + 1).padStart(2, "0")}`;
+            const pagoNoMes = (divida.pagamentos || []).filter(pagamento => pagamento.data?.startsWith(mesAtual)).reduce((soma, pagamento) => soma + Number(pagamento.valor || 0), 0);
+            return Math.max(0, Number(divida.valor || 0) - pagoNoMes);
+        }
+        return Math.max(0, Number(divida.valor || 0) - totalPago(divida));
+    };
 
     function atualizarSaldoPagamento() {
-        const divida = dividas.find(item => item.id === selectDividaPagamento.value);
+        const divida = dividas.find(item => String(item.id) === String(selectDividaPagamento.value));
         const saldo = divida ? saldoDevedor(divida) : 0;
         saldoPagamento.textContent = divida ? `Saldo em aberto: ${formatarMoeda(saldo)}` : "Não há dívidas em aberto.";
         inputValorPagamento.max = saldo.toFixed(2);
+        if (divida) {
+            tipoAbatimento.querySelector('option[value="parcelas"]').disabled = (divida.tipo || "pontual") !== "pontual";
+            if ((divida.tipo || "pontual") !== "pontual" && tipoAbatimento.value === "parcelas") tipoAbatimento.value = "valor";
+            const contas = carregarContas();
+            selectContaPagamento.innerHTML = `<option value="">Não registrar saída de conta</option>` + contas.map(c => `<option value="${escaparHtml(c.id)}">${escaparHtml(c.nome)} — ${formatarMoeda(c.valor)}</option>`).join("");
+        }
+        atualizarTipoAbatimento();
     }
-
+    function atualizarTipoAbatimento() {
+        const divida = dividas.find(item => String(item.id) === String(selectDividaPagamento.value));
+        const porParcelas = tipoAbatimento.value === "parcelas" && (divida?.tipo || "pontual") === "pontual";
+        grupoQuantidadeParcelas.classList.toggle("hidden", !porParcelas);
+        inputValorPagamento.readOnly = porParcelas;
+        inputValorPagamento.required = !porParcelas;
+        if (porParcelas && divida) {
+            quantidadeParcelas.max = String(Math.max(1, Number(divida.parcelas || 1)));
+            const valor = calcularAbatimentoParcelas(divida, quantidadeParcelas.value, saldoDevedor(divida)).reduce((soma, item) => soma + item.valor, 0);
+            inputValorPagamento.value = valor.toFixed(2);
+        } else if (divida) {
+            inputValorPagamento.value = "";
+            inputValorPagamento.max = saldoDevedor(divida).toFixed(2);
+        }
+    }
+    selectDividaPagamento.addEventListener("change", atualizarSaldoPagamento);
+    tipoAbatimento.addEventListener("change", atualizarTipoAbatimento);
+    quantidadeParcelas.addEventListener("input", atualizarTipoAbatimento);
     function abrirModalPagamento() {
         const abertas = dividas.filter(divida => saldoDevedor(divida) > 0);
         if (!abertas.length) {
@@ -648,21 +730,25 @@ function iniciarDividas() {
     selectDividaPagamento.addEventListener("change", atualizarSaldoPagamento);
     formPagamento.addEventListener("submit", event => {
         event.preventDefault();
-        const divida = dividas.find(item => item.id === selectDividaPagamento.value);
-        const valor = Number(inputValorPagamento.value);
+        event.stopImmediatePropagation();
+        const divida = dividas.find(item => String(item.id) === String(selectDividaPagamento.value));
+        const quantidade = tipoAbatimento.value === "parcelas" ? Number(quantidadeParcelas.value) : 0;
+        const parcelas = divida && quantidade ? calcularAbatimentoParcelas(divida, quantidade, saldoDevedor(divida)) : [];
+        const valor = quantidade ? parcelas.reduce((soma, item) => soma + item.valor, 0) : Number(inputValorPagamento.value);
         if (!divida || !Number.isFinite(valor) || valor <= 0 || valor > saldoDevedor(divida)) {
-            inputValorPagamento.setCustomValidity("O pagamento precisa ser maior que zero e não pode superar o saldo em aberto.");
+            inputValorPagamento.setCustomValidity("Informe um abatimento válido, dentro do saldo em aberto.");
             inputValorPagamento.reportValidity();
             inputValorPagamento.setCustomValidity("");
             return;
         }
-        divida.pagamentos = divida.pagamentos || [];
-        divida.pagamentos.push({ id: crypto.randomUUID(), valor, data: inputDataPagamento.value });
-        salvarDividas(dividas);
+        const contaId = selectContaPagamento.value || null;
+        const conta = contaId ? carregarContas().find(item => String(item.id) === String(contaId)) : null;
+        if (contaId && (!conta || Number(conta.valor || 0) < valor)) { alert("O saldo da conta selecionada não cobre esse pagamento."); return; }
+        if (!salvarAbatimentoDivida(divida, valor, inputDataPagamento.value, contaId, quantidade)) { alert("Não foi possível registrar esse abatimento."); return; }
         renderizarDividas();
+        carregarVisaoGeral();
         fecharModalPagamento();
     });
-
     function atualizarCamposPorTipo() {
         const pontual = tipoDividaInput.value === "pontual";
         const cartao = pagamentoInput.value.startsWith("cartao_");
@@ -883,7 +969,11 @@ function iniciarDividas() {
                 valor / parcelas;
 
             const dividaAtual = dividaEditandoId ? dividas.find(item => item.id === dividaEditandoId) : null;
-            const totalJaPago = dividaAtual ? (dividaAtual.pagamentos || []).reduce((soma, pagamento) => soma + Number(pagamento.valor || 0), 0) : 0;
+            const agora = new Date();
+            const mesAtual = `${agora.getFullYear()}-${String(agora.getMonth() + 1).padStart(2, "0")}`;
+            const totalJaPago = dividaAtual ? (dividaAtual.tipo === "pontual"
+                ? (dividaAtual.pagamentos || []).reduce((soma, pagamento) => soma + Number(pagamento.valor || 0), 0)
+                : (dividaAtual.pagamentos || []).filter(pagamento => pagamento.data?.startsWith(mesAtual)).reduce((soma, pagamento) => soma + Number(pagamento.valor || 0), 0)) : 0;
             if (valor < totalJaPago) {
                 alert(`O valor total não pode ser menor que o já pago (${formatarMoeda(totalJaPago)}).`);
                 return;
@@ -1120,31 +1210,49 @@ function iniciarDividas() {
 
         const nomesTipos = { fixa: "Fixa", variavel: "Vari\u00e1vel", assinatura: "Assinatura", pontual: "Gasto pontual" };
         const textoBusca = filtroBusca.value.trim().toLocaleLowerCase("pt-BR");
+        const mesSelecionado = filtroMes.value;
         const dividasFiltradas = dividas.filter(divida => {
             const tipo = divida.tipo || "pontual";
             const forma = divida.formaPagamento || (divida.cartao ? "cartao_proprio" : "pix");
             const responsavel = divida.responsavelCompra || (forma.startsWith("cartao_") ? "eu" : "");
             const data = divida.data || (divida.inicio ? `${divida.inicio}-01` : "");
             const texto = [divida.nome, divida.descricao, divida.cartao, divida.titularCartao, divida.pessoaCompra].join(" ").toLocaleLowerCase("pt-BR");
+            const mesDistancia = diferencaMeses(data.slice(0, 7), mesSelecionado);
+            const noMes = !mesSelecionado || (mesDistancia >= 0 && (tipo !== "pontual" || mesDistancia < Math.max(1, Number(divida.parcelas || 1))));
             return (!textoBusca || texto.includes(textoBusca))
-                && (!filtroMes.value || data.startsWith(filtroMes.value))
+                && noMes
                 && (!filtroTipo.value || tipo === filtroTipo.value)
                 && (!filtroPagamento.value || forma === filtroPagamento.value)
                 && (!filtroResponsavel.value || responsavel === filtroResponsavel.value);
         });
+        if (mesSelecionado) {
+            const itensMes = dividas.filter(divida => {
+                const data = divida.data || (divida.inicio ? `${divida.inicio}-01` : "");
+                const distancia = diferencaMeses(data.slice(0, 7), mesSelecionado);
+                return distancia >= 0 && ((divida.tipo || "pontual") !== "pontual" || distancia < Math.max(1, Number(divida.parcelas || 1)));
+            });
+            const previsto = itensMes.reduce((s, d) => s + ((d.tipo || "pontual") === "pontual" ? Number(d.valor || 0) / Math.max(1, Number(d.parcelas || 1)) : Number(d.valor || 0)), 0);
+            const pago = itensMes.reduce((s, d) => s + (d.pagamentos || []).filter(p => p.data?.startsWith(mesSelecionado)).reduce((a, p) => a + Number(p.valor || 0), 0), 0);
+            listaDividas.innerHTML = `<div class="resumo-grid monthly-debt-summary"><div class="resumo-card monthly-debt-total"><span class="resumo-label">Total mensal a pagar · ${formatarMes(mesSelecionado)}</span><strong class="resumo-valor">${formatarMoeda(previsto)}</strong><p>Parcelas ativas e despesas recorrentes do mês</p></div><div class="resumo-card"><span class="resumo-label">Pago no mês</span><strong class="resumo-valor">${formatarMoeda(pago)}</strong></div><div class="resumo-card"><span class="resumo-label">Em aberto do mês</span><strong class="resumo-valor">${formatarMoeda(Math.max(0, previsto - pago))}</strong></div></div>`;
+        }
         listaDividas.innerHTML = `
-            <div class="tabela-responsiva"><table class="tabela-dividas">
-                <thead><tr><th>Tipo</th><th>Nome</th><th>Descri&#231;&#227;o</th><th>Valor mensal/parcela</th><th>Valor total</th><th>Pago</th><th>Saldo aberto</th><th>Data</th><th>Parcelas</th><th>Pagamento</th><th>Cart&#227;o / titular</th><th>Comprador</th><th>Vencimento</th><th></th></tr></thead>
+            ${mesSelecionado ? listaDividas.innerHTML : ""}<div class="tabela-responsiva"><table class="tabela-dividas">
+                <thead><tr><th>Tipo</th><th>Nome</th><th>Descrição</th><th>Valor por mês/parcela</th><th>Valor total da dívida/compra</th><th>Pago</th><th>Saldo aberto</th><th>Data</th><th>Situação</th><th>Parcelas</th><th>Pagamento</th><th>Cartão / titular</th><th>Comprador</th><th>Vencimento</th><th></th></tr></thead>
                 <tbody>${dividasFiltradas.length ? dividasFiltradas.map(divida => {
                     const tipo = divida.tipo || "pontual";
                     const unitario = tipo === "pontual" ? Number(divida.valorParcela || divida.valor || 0) : Number(divida.valor || 0);
+                    const faltamParcelas = tipo === "pontual" ? Math.min(Math.max(1, Number(divida.parcelas || 1)), Math.ceil(Math.max(0, saldoDevedor(divida) - 0.001) / Math.max(unitario, 0.01))) : null;
+                    const saldoAtual = saldoDevedor(divida);
+                    const pagoAtual = tipo === "pontual" ? totalPago(divida) : Math.max(0, Number(divida.valor || 0) - saldoAtual);
+                    const statusPagamento = saldoAtual <= 0 ? "Paga" : pagoAtual > 0 ? "Pago parcial" : "A pagar";
+                    const classeStatus = saldoAtual <= 0 ? "is-paid" : pagoAtual > 0 ? "is-partial" : "is-due";
                     const forma = divida.formaPagamento || (divida.cartao ? "cartao_proprio" : "pix");
                     const responsavel = divida.responsavelCompra || (forma.startsWith("cartao_") ? "eu" : "");
                     const comprador = !forma.startsWith("cartao_") ? "-" : responsavel === "outra_pessoa" ? (divida.pessoaCompra || "Outra pessoa") : "Eu";
                     const nomesPagamento = { cartao_proprio: "Cartão próprio", cartao_terceiros: "Cartão de terceiros", pix: "Pix", dinheiro: "Dinheiro / físico" };
                     const cartaoExibicao = forma === "cartao_proprio" || forma === "cartao_terceiros" ? `${divida.cartao || "-"}${forma === "cartao_terceiros" ? ` (${divida.titularCartao || "titular não informado"})` : ""}` : "-";
-                    return `<tr><td><span class="divida-tipo">${nomesTipos[tipo] || "Gasto pontual"}</span></td><td>${divida.nome || "-"}</td><td>${divida.descricao || "-"}</td><td>${formatarMoeda(unitario)}</td><td>${formatarMoeda(Number(divida.valor || 0))}</td><td>${formatarMoeda(totalPago(divida))}</td><td>${formatarMoeda(saldoDevedor(divida))}</td><td>${formatarData(divida.data || (divida.inicio ? `${divida.inicio}-01` : ""))}</td><td>${tipo === "pontual" ? `${divida.parcelas || 1}x` : "Mensal"}</td><td>${nomesPagamento[forma] || "-"}</td><td>${cartaoExibicao}</td><td>${comprador}</td><td>${divida.diaVencimento ? `Dia ${divida.diaVencimento}` : "-"}</td><td><button class="btn-editar-divida" data-id="${divida.id}">Editar</button></td></tr>`;
-                }).join("") : `<tr><td colspan="14">Nenhuma dívida corresponde aos filtros.</td></tr>`}</tbody>
+                    return `<tr><td><span class="divida-tipo">${nomesTipos[tipo] || "Gasto pontual"}</span></td><td>${divida.nome || "-"}</td><td>${divida.descricao || "-"}</td><td>${formatarMoeda(unitario)}</td><td>${formatarMoeda(Number(divida.valor || 0))}</td><td>${formatarMoeda(pagoAtual)}</td><td>${formatarMoeda(saldoAtual)}</td><td>${formatarData(divida.data || (divida.inicio ? `${divida.inicio}-01` : ""))}</td><td><span class="payment-status ${classeStatus}">${statusPagamento}</span></td><td>${tipo === "pontual" ? `${divida.parcelas || 1}x · faltam ${faltamParcelas}` : "Mensal"}</td><td>${nomesPagamento[forma] || "-"}</td><td>${cartaoExibicao}</td><td>${comprador}</td><td>${divida.diaVencimento ? `Dia ${divida.diaVencimento}` : "-"}</td><td><button class="btn-editar-divida" data-id="${divida.id}">Editar</button></td></tr>`;
+                }).join("") : `<tr><td colspan="15">Nenhuma dívida corresponde aos filtros.</td></tr>`}</tbody>
             </table></div>`;
 
         const botoesEditar =
@@ -1336,6 +1444,75 @@ function iniciarCartoes() {
     const dono = document.getElementById("filtroDonoCartoes");
     const pessoa = document.getElementById("filtroPessoaCartoes");
     const busca = document.getElementById("filtroBuscaCartoes");
+    const modalAbate = document.getElementById("modalAbatimentoCartao");
+    const selectDividaAbate = document.getElementById("dividaAbatimentoCartao");
+    const modoAbate = document.getElementById("modoAbatimentoCartao");
+    const valorAbate = document.getElementById("valorAbatimentoCartao");
+    const qtdAbate = document.getElementById("qtdAbatimentoCartao");
+    const grupoQtdAbate = document.getElementById("grupoQtdAbatimentoCartao");
+    const selectContaAbate = document.getElementById("contaAbatimentoCartao");
+    const formAbate = document.getElementById("formAbatimentoCartao");
+
+    function atualizarAbateCartao() {
+        const divida = dividas.find(item => String(item.id) === String(selectDividaAbate.value));
+        if (!divida) return;
+        const saldo = Math.max(0, Number(divida.valor || 0) - (divida.pagamentos || []).reduce((s, p) => s + Number(p.valor || 0), 0));
+        document.getElementById("saldoAbatimentoCartao").textContent = `Saldo em aberto: ${formatarMoeda(saldo)}`;
+        modoAbate.querySelector('option[value="parcelas"]').disabled = (divida.tipo || "pontual") !== "pontual";
+        if ((divida.tipo || "pontual") !== "pontual" && modoAbate.value === "parcelas") modoAbate.value = "valor";
+        const porParcelas = modoAbate.value === "parcelas" && (divida.tipo || "pontual") === "pontual";
+        grupoQtdAbate.classList.toggle("hidden", !porParcelas);
+        valorAbate.readOnly = porParcelas;
+        valorAbate.required = !porParcelas;
+        if (porParcelas) {
+            qtdAbate.max = String(Math.max(1, Number(divida.parcelas || 1)));
+            valorAbate.value = calcularAbatimentoParcelas(divida, qtdAbate.value, saldo).reduce((s, p) => s + p.valor, 0).toFixed(2);
+        } else {
+            valorAbate.value = "";
+            valorAbate.max = saldo.toFixed(2);
+        }
+        const contas = carregarContas();
+        selectContaAbate.innerHTML = `<option value="">Sem debito de conta</option>` + contas.map(conta => `<option value="${escaparHtml(conta.id)}">${escaparHtml(conta.nome)} - ${formatarMoeda(conta.valor)}</option>`).join("");
+    }
+    function abrirAbateCartao(id) {
+        const comprasAbertas = dividas.filter(item => (item.formaPagamento || (item.cartao ? "cartao_proprio" : "")).startsWith("cartao_") && Number(item.valor || 0) > (item.pagamentos || []).reduce((s, p) => s + Number(p.valor || 0), 0));
+        if (!comprasAbertas.length) { alert("Nao ha compras de cartao com saldo em aberto."); return; }
+        selectDividaAbate.innerHTML = comprasAbertas.map(item => `<option value="${escaparHtml(item.id)}">${escaparHtml(item.nome || "Compra")} - ${formatarMoeda(Number(item.valor || 0) - (item.pagamentos || []).reduce((s, p) => s + Number(p.valor || 0), 0))}</option>`).join("");
+        formAbate.reset();
+        if (id) selectDividaAbate.value = id;
+        const agora = new Date();
+        document.getElementById("dataAbatimentoCartao").value = `${agora.getFullYear()}-${String(agora.getMonth() + 1).padStart(2, "0")}-${String(agora.getDate()).padStart(2, "0")}`;
+        atualizarAbateCartao();
+        modalAbate.classList.remove("hidden");
+    }
+    const fecharAbateCartao = () => { modalAbate.classList.add("hidden"); formAbate.reset(); };
+    document.getElementById("btnAbaterCartao").addEventListener("click", () => abrirAbateCartao());
+    lista.addEventListener("click", event => {
+        const button = event.target.closest(".btn-abater-cartao");
+        if (button) abrirAbateCartao(button.dataset.id);
+    });
+    document.getElementById("btnFecharAbatimentoCartao").addEventListener("click", fecharAbateCartao);
+    document.getElementById("btnCancelarAbatimentoCartao").addEventListener("click", fecharAbateCartao);
+    selectDividaAbate.addEventListener("change", atualizarAbateCartao);
+    modoAbate.addEventListener("change", atualizarAbateCartao);
+    qtdAbate.addEventListener("input", atualizarAbateCartao);
+    formAbate.addEventListener("submit", event => {
+        event.preventDefault();
+        const divida = dividas.find(item => String(item.id) === String(selectDividaAbate.value));
+        if (!divida) return;
+        const saldo = Math.max(0, Number(divida.valor || 0) - (divida.pagamentos || []).reduce((s, p) => s + Number(p.valor || 0), 0));
+        const quantidade = modoAbate.value === "parcelas" ? Number(qtdAbate.value) : 0;
+        const valor = quantidade ? calcularAbatimentoParcelas(divida, quantidade, saldo).reduce((s, p) => s + p.valor, 0) : Number(valorAbate.value);
+        const contaId = selectContaAbate.value || null;
+        const conta = contaId ? carregarContas().find(item => String(item.id) === String(contaId)) : null;
+        if (valor <= 0 || valor > saldo || (contaId && (!conta || Number(conta.valor || 0) < valor))) { alert("Confira o valor do abatimento e o saldo da conta escolhida."); return; }
+        if (!salvarAbatimentoDivida(divida, valor, document.getElementById("dataAbatimentoCartao").value, contaId, quantidade)) { alert("Nao foi possivel registrar o abatimento."); return; }
+        renderizar(); carregarVisaoGeral(); fecharAbateCartao();
+    });
+    if (!mes.value) {
+        const agora = new Date();
+        mes.value = `${agora.getFullYear()}-${String(agora.getMonth() + 1).padStart(2, "0")}`;
+    }
 
     function renderizar() {
         const compras = dividas.filter(item => (item.formaPagamento || (item.cartao ? "cartao_proprio" : "" )).startsWith("cartao_"));
@@ -1343,20 +1520,24 @@ function iniciarCartoes() {
             const forma = item.formaPagamento || "cartao_proprio";
             const responsavel = item.responsavelCompra || "eu";
             const data = item.data || (item.inicio ? `${item.inicio}-01` : "");
+            const distancia = diferencaMeses(data.slice(0, 7), mes.value);
+            const ativoNoMes = distancia >= 0 && ((item.tipo || "pontual") !== "pontual" || distancia < Math.max(1, Number(item.parcelas || 1)));
             const texto = `${item.nome || ""} ${item.cartao || ""} ${item.titularCartao || ""} ${item.pessoaCompra || ""}`.toLocaleLowerCase("pt-BR");
-            return (!mes.value || data.startsWith(mes.value))
+            return (!mes.value || ativoNoMes)
                 && (!dono.value || forma === dono.value)
                 && (!pessoa.value || responsavel === pessoa.value)
                 && (!busca.value.trim() || texto.includes(busca.value.trim().toLocaleLowerCase("pt-BR")));
         });
         const total = filtradas.reduce((soma, item) => soma + Number(item.valor || 0), 0);
+        const mensal = filtradas.reduce((soma, item) => soma + ((item.tipo || "pontual") === "pontual" ? Number(item.valor || 0) / Math.max(1, Number(item.parcelas || 1)) : Number(item.valor || 0)), 0);
         const gastosTerceiros = filtradas.filter(item => (item.responsavelCompra || "eu") === "outra_pessoa").reduce((soma, item) => soma + Number(item.valor || 0), 0);
         document.getElementById("resumoCartoes").innerHTML = `<div class="resumo-card"><span class="resumo-label">Compras no período</span><strong class="resumo-valor">${formatarMoeda(total)}</strong></div><div class="resumo-card"><span class="resumo-label">Compras de outras pessoas</span><strong class="resumo-valor">${formatarMoeda(gastosTerceiros)}</strong></div>`;
-        lista.innerHTML = `<div class="tabela-responsiva"><table class="tabela-dividas"><thead><tr><th>Data</th><th>Compra</th><th>Cartão</th><th>Tipo de cartão</th><th>Quem comprou</th><th>Valor</th><th>Parcelas</th><th></th></tr></thead><tbody>${filtradas.length ? filtradas.map(item => {
+        lista.innerHTML = `<div class="tabela-responsiva"><table class="tabela-dividas"><thead><tr><th>Data</th><th>Compra</th><th>Cartão</th><th>Tipo de cartão</th><th>Quem comprou</th><th>Parcela mensal</th><th>Total original</th><th>Parcelas</th><th></th></tr></thead><tbody>${filtradas.length ? filtradas.map(item => {
             const forma = item.formaPagamento || "cartao_proprio";
             const quem = item.responsavelCompra === "outra_pessoa" ? (item.pessoaCompra || "Outra pessoa") : "Eu";
-            return `<tr><td>${formatarData(item.data || (item.inicio ? `${item.inicio}-01` : ""))}</td><td>${item.nome || "-"}</td><td>${item.cartao || "-"}</td><td>${forma === "cartao_terceiros" ? `De ${item.titularCartao || "terceiros"}` : "Meu cartão"}</td><td>${quem}</td><td>${formatarMoeda(Number(item.valor || 0))}</td><td>${item.parcelas || 1}x</td><td><a href="dividas.html">Editar em Dívidas</a></td></tr>`;
-        }).join("") : '<tr><td colspan="8">Nenhuma compra no cartão corresponde aos filtros.</td></tr>'}</tbody></table></div>`;
+            return `<tr><td>${formatarData(item.data || (item.inicio ? `${item.inicio}-01` : ""))}</td><td>${item.nome || "-"}</td><td>${item.cartao || "-"}</td><td>${forma === "cartao_terceiros" ? `De ${item.titularCartao || "terceiros"}` : "Meu cartão"}</td><td>${quem}</td><td>${formatarMoeda((item.tipo || "pontual") === "pontual" ? Number(item.valor || 0) / Math.max(1, Number(item.parcelas || 1)) : Number(item.valor || 0))}</td><td>${(item.tipo || "pontual") === "pontual" ? formatarMoeda(Number(item.valor || 0)) : "-"}</td><td>${item.parcelas || 1}x</td><td><button type="button" class="btn-abater-cartao" data-id="${item.id}">Abater</button> <a href="dividas.html">Editar em Dívidas</a></td></tr>`;
+        }).join("") : '<tr><td colspan="9">Nenhuma compra no cartão corresponde aos filtros.</td></tr>'}</tbody></table></div>`;
+        document.getElementById("resumoCartoes").innerHTML = `<div class="resumo-card monthly-debt-total"><span class="resumo-label">Total mensal a pagar · ${formatarMes(mes.value)}</span><strong class="resumo-valor">${formatarMoeda(mensal)}</strong><p>Parcelas ativas e despesas recorrentes no cartão</p></div><div class="resumo-card"><span class="resumo-label">Valor total das compras ativas</span><strong class="resumo-valor">${formatarMoeda(total)}</strong></div><div class="resumo-card"><span class="resumo-label">Parte de outras pessoas (valor original)</span><strong class="resumo-valor">${formatarMoeda(gastosTerceiros)}</strong></div>`;
         lista.querySelectorAll('tbody tr').forEach((linha, indice) => {
             const link = linha.querySelector('a[href="dividas.html"]');
             if (link && filtradas[indice]) link.dataset.id = filtradas[indice].id;
@@ -1444,6 +1625,143 @@ function iniciarInvestimentos() {
 }
 
 if (document.getElementById("listaInvestimentos")) iniciarInvestimentos();
+
+function iniciarCalendario() {
+    const inputMes = document.getElementById("mesCalendario");
+    const grade = document.getElementById("gradeCalendarioDividas");
+    const resumo = document.getElementById("resumoCalendario");
+    const agora = new Date();
+    const mesAtual = () => `${agora.getFullYear()}-${String(agora.getMonth() + 1).padStart(2, "0")}`;
+    inputMes.value = mesAtual();
+    const formatarValor = value => formatarMoeda(Number(value || 0));
+    const modalPagamento = document.getElementById("modalPagamentoCalendario");
+    const formPagamento = document.getElementById("formPagamentoCalendario");
+    const inputValor = document.getElementById("valorPagamentoCalendario");
+    const selectConta = document.getElementById("contaPagamentoCalendario");
+    let pagamentoCalendario = null;
+    const fecharPagamento = () => { modalPagamento.classList.add("hidden"); formPagamento.reset(); pagamentoCalendario = null; };
+    document.getElementById("btnFecharPagamentoCalendario").addEventListener("click", fecharPagamento);
+    document.getElementById("btnCancelarPagamentoCalendario").addEventListener("click", fecharPagamento);
+    grade.addEventListener("click", event => {
+        const botao = event.target.closest(".calendar-pay-button");
+        if (!botao) return;
+        const divida = carregarDividas().find(item => String(item.id) === String(botao.dataset.id));
+        if (!divida) return;
+        pagamentoCalendario = { divida, parcela: Number(botao.dataset.parcela) || null, limite: Number(botao.dataset.valor) };
+        inputValor.value = pagamentoCalendario.limite.toFixed(2);
+        inputValor.max = pagamentoCalendario.limite.toFixed(2);
+        document.getElementById("infoPagamentoCalendario").textContent = `${divida.nome || "Dívida"}${pagamentoCalendario.parcela ? ` - parcela ${pagamentoCalendario.parcela}` : " - recorrência do mês"}`;
+        const contas = carregarContas();
+        selectConta.innerHTML = `<option value="">Registrar sem alterar saldo</option>` + contas.map(conta => `<option value="${escaparHtml(conta.id)}">${escaparHtml(conta.nome)} - ${formatarMoeda(conta.valor)}</option>`).join("");
+        const data = `${inputMes.value}-${String(botao.dataset.dia).padStart(2, "0")}`;
+        document.getElementById("dataPagamentoCalendario").value = data;
+        modalPagamento.classList.remove("hidden");
+    });
+    formPagamento.addEventListener("submit", event => {
+        event.preventDefault();
+        if (!pagamentoCalendario) return;
+        const valor = Number(inputValor.value);
+        const contaId = selectConta.value || null;
+        const conta = contaId ? carregarContas().find(item => String(item.id) === String(contaId)) : null;
+        if (!Number.isFinite(valor) || valor <= 0 || valor > pagamentoCalendario.limite || (contaId && (!conta || Number(conta.valor || 0) < valor))) {
+            alert("Informe um valor valido e confira o saldo da conta.");
+            return;
+        }
+        if (!salvarAbatimentoDivida(pagamentoCalendario.divida, valor, document.getElementById("dataPagamentoCalendario").value, contaId, 0, pagamentoCalendario.parcela)) {
+            alert("Nao foi possivel registrar o pagamento.");
+            return;
+        }
+        fecharPagamento();
+        renderizar();
+        carregarVisaoGeral();
+    });
+
+    function renderizar() {
+        const [ano, mesNumero] = inputMes.value.split("-").map(Number);
+        if (!ano || !mesNumero) return;
+        const mesChave = inputMes.value;
+        const primeiroDia = new Date(ano, mesNumero - 1, 1);
+        const diasNoMes = new Date(ano, mesNumero, 0).getDate();
+        const deslocamento = (primeiroDia.getDay() + 6) % 7;
+        const hoje = new Date();
+        const pagamentosPrevistos = [];
+        carregarDividas().forEach(divida => {
+            const dataInicio = divida.data || (divida.inicio ? `${divida.inicio}-01` : "");
+            if (!dataInicio) return;
+            const mesInicio = dataInicio.slice(0, 7);
+            const distancia = diferencaMeses(mesInicio, mesChave);
+            if (distancia < 0) return;
+            const pontual = (divida.tipo || "pontual") === "pontual";
+            const totalParcelas = Math.max(1, Number(divida.parcelas || 1));
+            if (pontual && distancia >= totalParcelas) return;
+            const diaBase = pontual ? Number(dataInicio.slice(8, 10)) || 1 : Number(divida.diaVencimento) || Number(dataInicio.slice(8, 10)) || 1;
+            const diaVencimento = Math.min(diaBase, diasNoMes);
+            const parcela = distancia + 1;
+            const valorPrevisto = pontual ? Number(divida.valor || 0) / totalParcelas : Number(divida.valor || 0);
+            const pagamentos = divida.pagamentos || [];
+            const pagoNaParcela = pontual ? pagamentos.filter(item => Number(item.parcela) === parcela).reduce((s, item) => s + Number(item.valor || 0), 0) : 0;
+            const pagoSemParcelaNoMes = pagamentos.filter(item => !item.parcela && item.data?.startsWith(mesChave)).reduce((s, item) => s + Number(item.valor || 0), 0);
+            const pagoNoMes = pontual ? Math.min(valorPrevisto, pagoNaParcela + pagoSemParcelaNoMes) : Math.min(valorPrevisto, pagamentos.filter(item => item.data?.startsWith(mesChave)).reduce((s, item) => s + Number(item.valor || 0), 0));
+            const saldo = pontual
+                ? Math.max(0, Number(divida.valor || 0) - pagamentos.reduce((s, item) => s + Number(item.valor || 0), 0))
+                : Math.max(0, Number(divida.valor || 0) - pagamentos.filter(item => item.data?.startsWith(mesChave)).reduce((s, item) => s + Number(item.valor || 0), 0));
+            const valorUnitario = Number(divida.valor || 0) / totalParcelas;
+            const faltam = pontual ? Math.min(totalParcelas, Math.ceil(Math.max(0, saldo - 0.001) / Math.max(valorUnitario, 0.01))) : null;
+            if (saldo <= 0 && pagoNoMes <= 0) return;
+            pagamentosPrevistos.push({
+                id: divida.id,
+                nome: divida.nome || "Dívida",
+                dia: diaVencimento,
+                valor: valorPrevisto,
+                pago: pagoNoMes,
+                valorAberto: Math.max(0, valorPrevisto - pagoNoMes),
+                pontual,
+                parcela,
+                totalParcelas,
+                faltam,
+                quitada: saldo <= 0
+            });
+        });
+        const previsto = pagamentosPrevistos.reduce((s, item) => s + item.valor, 0);
+        const pago = pagamentosPrevistos.reduce((s, item) => s + item.pago, 0);
+        const mesFormatado = new Date(ano, mesNumero - 1, 1).toLocaleDateString("pt-BR", { month: "long", year: "numeric" });
+        resumo.innerHTML = `<div class="resumo-card monthly-debt-total"><span class="resumo-label">Total previsto em ${escaparHtml(mesFormatado)}</span><strong class="resumo-valor">${formatarValor(previsto)}</strong><p>${pagamentosPrevistos.length} vencimento(s) no mês</p></div><div class="resumo-card"><span class="resumo-label">Pago no mês</span><strong class="resumo-valor">${formatarValor(pago)}</strong></div><div class="resumo-card"><span class="resumo-label">Em aberto</span><strong class="resumo-valor">${formatarValor(Math.max(0, previsto - pago))}</strong></div>`;
+        const eventosPorDia = new Map();
+        pagamentosPrevistos.forEach(item => {
+            const lista = eventosPorDia.get(item.dia) || [];
+            lista.push(item);
+            eventosPorDia.set(item.dia, lista);
+        });
+        const cabecalhos = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"];
+        let html = cabecalhos.map(dia => `<div class="calendar-weekday" role="columnheader">${dia}</div>`).join("");
+        for (let i = 0; i < deslocamento; i++) html += '<div class="calendar-day is-empty" aria-hidden="true"></div>';
+        for (let dia = 1; dia <= diasNoMes; dia++) {
+            const itens = eventosPorDia.get(dia) || [];
+            const ehHoje = hoje.getFullYear() === ano && hoje.getMonth() + 1 === mesNumero && hoje.getDate() === dia;
+            html += `<div class="calendar-day${ehHoje ? " is-today" : ""}" role="gridcell"><span class="calendar-day-number">${dia}</span>${itens.map(item => { const status = item.pago >= item.valor ? "Paga" : item.pago > 0 ? "Pago parcial" : "A pagar"; const classeStatus = item.pago >= item.valor ? "is-paid" : item.pago > 0 ? "is-partial" : "is-due"; const botaoPagar = item.valorAberto > 0 ? `<button type="button" class="calendar-pay-button" data-id="${escaparHtml(item.id)}" data-parcela="${item.pontual ? item.parcela : ""}" data-valor="${item.valorAberto}" data-dia="${dia}">Pagar</button>` : ""; return `<div class="calendar-event-wrap"><a class="calendar-event ${classeStatus}" href="dividas.html" title="${escaparHtml(item.nome)}"><strong>${escaparHtml(item.nome)}</strong><span>${formatarValor(item.valor)}${item.pago > 0 && item.pago < item.valor ? ` - pago ${formatarValor(item.pago)}` : ""}</span><small><span class="payment-status ${classeStatus}">${status}</span>${item.pontual ? `Parcela ${item.parcela}/${item.totalParcelas} - faltam ${item.faltam}` : "Recorrente"}</small></a>${botaoPagar}</div>`; }).join("")}</div>`;
+        }
+        const celulasFaltando = (7 - ((deslocamento + diasNoMes) % 7)) % 7;
+        for (let i = 0; i < celulasFaltando; i++) html += '<div class="calendar-day is-empty" aria-hidden="true"></div>';
+        grade.innerHTML = html;
+    }
+
+    document.getElementById("mesAnteriorCalendario").addEventListener("click", () => {
+        const [ano, mes] = inputMes.value.split("-").map(Number);
+        const anterior = new Date(ano, mes - 2, 1);
+        inputMes.value = `${anterior.getFullYear()}-${String(anterior.getMonth() + 1).padStart(2, "0")}`;
+        renderizar();
+    });
+    document.getElementById("mesProximoCalendario").addEventListener("click", () => {
+        const [ano, mes] = inputMes.value.split("-").map(Number);
+        const proximo = new Date(ano, mes, 1);
+        inputMes.value = `${proximo.getFullYear()}-${String(proximo.getMonth() + 1).padStart(2, "0")}`;
+        renderizar();
+    });
+    inputMes.addEventListener("change", renderizar);
+    renderizar();
+}
+
+if (document.getElementById("gradeCalendarioDividas")) iniciarCalendario();
 
 function desenharGraficoBarras(canvas, rotulos, conjuntos) {
     if (!canvas) return;
@@ -1567,6 +1885,91 @@ function diferencaMeses(mesA, mesB) {
     return (anoB - anoA) * 12 + numeroB - numeroA;
 }
 
+function obterResumoMes(mesChave) {
+    const despesas = carregarDividas().reduce((resumo, divida) => {
+        const dataInicio = divida.data || (divida.inicio ? `${divida.inicio}-01` : "");
+        const distancia = diferencaMeses(dataInicio.slice(0, 7), mesChave);
+        const pontual = (divida.tipo || "pontual") === "pontual";
+        const parcelas = Math.max(1, Number(divida.parcelas || 1));
+        const ativa = distancia >= 0 && (!pontual || distancia < parcelas);
+        if (!ativa) return resumo;
+        resumo.previsto += pontual ? Number(divida.valor || 0) / parcelas : Number(divida.valor || 0);
+        resumo.pago += (divida.pagamentos || []).filter(pagamento => pagamento.data?.startsWith(mesChave)).reduce((soma, pagamento) => soma + Number(pagamento.valor || 0), 0);
+        return resumo;
+    }, { previsto: 0, pago: 0 });
+    resumo.emAberto = Math.max(0, despesas.previsto - despesas.pago);
+    resumo.receitas = JSON.parse(localStorage.getItem("financeiro_receitas") || "[]")
+        .filter(item => item.data?.startsWith(mesChave))
+        .reduce((soma, item) => soma + Number(item.valor || 0), 0);
+    resumo.receitasSemDeposito = JSON.parse(localStorage.getItem("financeiro_receitas") || "[]")
+        .filter(item => item.data?.startsWith(mesChave) && !item.contaId)
+        .reduce((soma, item) => soma + Number(item.valor || 0), 0);
+    resumo.saldoContas = carregarContas().reduce((soma, conta) => soma + Number(conta.valor || 0), 0);
+    resumo.saldoProjetado = resumo.saldoContas + resumo.receitasSemDeposito - resumo.emAberto;
+    return resumo;
+}
+
+function atualizarResumoFinanceiroMensal() {
+    const mesInput = document.getElementById("mesResumoFinanceiro");
+    if (!mesInput) return;
+    if (!mesInput.value) {
+        const agora = new Date();
+        mesInput.value = `${agora.getFullYear()}-${String(agora.getMonth() + 1).padStart(2, "0")}`;
+    }
+    const resumo = obterResumoMes(mesInput.value);
+    const campos = {
+        receitasMes: resumo.receitas,
+        despesasPrevistasMes: resumo.previsto,
+        despesasPagasMes: resumo.pago,
+        despesasEmAbertoMes: resumo.emAberto,
+        saldoProjetadoMes: resumo.saldoProjetado
+    };
+    Object.entries(campos).forEach(([id, valor]) => {
+        const elemento = document.getElementById(id);
+        if (elemento) elemento.textContent = formatarMoeda(valor);
+    });
+}
+
+function iniciarReceitas() {
+    const modal = document.getElementById("modalReceita");
+    const form = document.getElementById("formReceita");
+    if (!modal || !form || !document.getElementById("btnNovaReceita")) return;
+    const selectConta = document.getElementById("contaReceita");
+    const fechar = () => { modal.classList.add("hidden"); form.reset(); };
+    document.getElementById("btnNovaReceita").addEventListener("click", () => {
+        const contas = carregarContas();
+        selectConta.innerHTML = `<option value="">Registrar sem alterar saldo de conta</option>` + contas.map(conta => `<option value="${escaparHtml(conta.id)}">${escaparHtml(conta.nome)} - ${formatarMoeda(conta.valor)}</option>`).join("");
+        const agora = new Date();
+        document.getElementById("dataReceita").value = `${agora.getFullYear()}-${String(agora.getMonth() + 1).padStart(2, "0")}-${String(agora.getDate()).padStart(2, "0")}`;
+        modal.classList.remove("hidden");
+    });
+    ["btnFecharReceita", "btnCancelarReceita"].forEach(id => document.getElementById(id).addEventListener("click", fechar));
+    form.addEventListener("submit", event => {
+        event.preventDefault();
+        const contas = carregarContas();
+        const conta = contas.find(item => String(item.id) === String(selectConta.value));
+        const receita = {
+            id: crypto.randomUUID(),
+            descricao: document.getElementById("descricaoReceita").value.trim(),
+            valor: Number(document.getElementById("valorReceita").value),
+            data: document.getElementById("dataReceita").value,
+            contaId: conta?.id || null,
+            contaNome: conta?.nome || ""
+        };
+        if (!receita.descricao || !Number.isFinite(receita.valor) || receita.valor <= 0) return;
+        if (conta) {
+            conta.valor = Number(conta.valor || 0) + receita.valor;
+            salvarContas(contas);
+        }
+        const receitas = JSON.parse(localStorage.getItem("financeiro_receitas") || "[]");
+        receitas.push(receita);
+        localStorage.setItem("financeiro_receitas", JSON.stringify(receitas));
+        carregarVisaoGeral();
+        atualizarResumoFinanceiroMensal();
+        fechar();
+    });
+}
+
 function iniciarGraficos() {
     const despesasCanvas = document.getElementById("graficoDespesas");
     if (despesasCanvas) {
@@ -1574,12 +1977,24 @@ function iniciarGraficos() {
         const agora = new Date();
         mes.value = `${agora.getFullYear()}-${String(agora.getMonth() + 1).padStart(2, "0")}`;
         const detalhe = document.getElementById("detalheGraficoDespesas");
+        const tipoCanonico = item => {
+            const tipo = String(item.tipo || "pontual").trim().toLowerCase();
+            if (["fixa", "fixed", "despesa_fixa", "divida_fixa", "dívida fixa"].includes(tipo)) return "fixa";
+            if (["variavel", "variável", "variable", "despesa_variavel", "divida_variavel", "dívida variável"].includes(tipo)) return "variavel";
+            if (["assinatura", "subscription", "recorrente", "recorrência", "recorrencia"].includes(tipo)) return "assinatura";
+            return "pontual";
+        };
+        const mesDoItem = item => {
+            const data = item.data || item.dataCompra || item.inicio || item.dataInicio || item.createdAt || "";
+            const mesItem = String(data).slice(0, 7);
+            return /^\d{4}-\d{2}$/.test(mesItem) ? mesItem : "";
+        };
         despesasCanvas.addEventListener("chartselect", event => {
             const tipos = ["fixa", "variavel", "assinatura", "pontual"];
             const tipo = tipos[event.detail.indice];
             const registros = carregarDividas().filter(item => {
-                const tipoItem = item.tipo || "pontual";
-                const inicio = item.data ? item.data.slice(0, 7) : item.inicio;
+                const tipoItem = tipoCanonico(item);
+                const inicio = mesDoItem(item);
                 const distancia = diferencaMeses(inicio, mes.value);
                 return tipoItem === tipo && distancia >= 0 && (tipo !== "pontual" || distancia < Math.max(1, Number(item.parcelas || 1)));
             });
@@ -1592,11 +2007,11 @@ function iniciarGraficos() {
             detalhe.classList.add("has-selection");
         });
         function atualizar() {
-            const dividas = JSON.parse(localStorage.getItem("financeiro_dividas") || "[]");
+            const dividas = carregarDividas();
             const tipos = ["fixa", "variavel", "assinatura", "pontual"];
             const totais = tipos.map(tipo => dividas.filter(item => {
-                const tipoItem = item.tipo || "pontual";
-                const inicio = item.data ? item.data.slice(0, 7) : item.inicio;
+                const tipoItem = tipoCanonico(item);
+                const inicio = mesDoItem(item);
                 const distancia = diferencaMeses(inicio, mes.value);
                 if (tipoItem !== tipo || distancia < 0) return false;
                 return tipo !== "pontual" || distancia < Math.max(1, Number(item.parcelas || 1));
@@ -1608,7 +2023,12 @@ function iniciarGraficos() {
             detalhe.textContent = "Passe o cursor sobre uma barra para ver o valor; clique para detalhar as despesas.";
             desenharGraficoBarras(despesasCanvas, ["Fixas", "Variáveis", "Assinaturas", "Pontuais"], [{ nome: "Valor mensal", valores: totais, cor: "#5664e8" }]);
         }
-        mes.addEventListener("change", atualizar); atualizar();
+        mes.addEventListener("change", atualizar);
+        window.atualizarGraficoDespesas = atualizar;
+        window.addEventListener("storage", event => {
+            if (event.key === "financeiro_dividas") atualizar();
+        });
+        atualizar();
     }
 
     const cartoesCanvas = document.getElementById("graficoCartoes");
@@ -1659,9 +2079,99 @@ function iniciarGraficos() {
 iniciarGraficos();
 
 function escaparHtml(valor) {
+    const entidade = nome => `${String.fromCharCode(38)}${nome};`;
     return String(valor ?? "").replace(/[&<>"']/g, caractere => ({
-        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
-    })[caractere]);
+        "&": entidade("amp"), "<": entidade("lt"), ">": entidade("gt"), '"': entidade("quot")
+    })[caractere] || caractere);
+}
+
+function calcularAbatimentoParcelas(divida, quantidade, saldoRestante = null) {
+    const totalParcelas = Math.max(1, Number(divida.parcelas || 1));
+    const valorParcela = Number(divida.valor || 0) / totalParcelas;
+    const limite = Math.min(totalParcelas, Math.max(1, Number(quantidade || 1)));
+    const pagos = Array.from({ length: totalParcelas }, (_, indice) =>
+        (divida.pagamentos || []).filter(p => Number(p.parcela) === indice + 1).reduce((soma, p) => soma + Number(p.valor || 0), 0));
+    let restanteGeral = saldoRestante == null ? Infinity : Math.max(0, Number(saldoRestante));
+    const abatimentos = [];
+    for (let i = 0; i < totalParcelas && abatimentos.length < limite && restanteGeral > 0; i++) {
+        const restanteParcela = Math.max(0, valorParcela - pagos[i]);
+        if (!restanteParcela) continue;
+        const valor = Math.min(restanteParcela, restanteGeral);
+        abatimentos.push({ parcela: i + 1, valor });
+        restanteGeral -= valor;
+    }
+    return abatimentos;
+}
+
+function salvarAbatimentoDivida(divida, valor, data, contaId = null, quantidadeParcelas = 0, parcelaForcada = null) {
+    let nomeConta = "";
+    if (contaId) {
+        const contas = carregarContas();
+        const conta = contas.find(item => String(item.id) === String(contaId));
+        if (!conta || Number(conta.valor || 0) < valor) return false;
+        nomeConta = conta.nome || "";
+        conta.valor = Number(conta.valor || 0) - valor;
+        salvarContas(contas);
+    }
+    divida.pagamentos = divida.pagamentos || [];
+    const parcelas = quantidadeParcelas ? calcularAbatimentoParcelas(divida, quantidadeParcelas, valor) : [];
+    const pagamentos = parcelas.length ? parcelas : [{ parcela: Number(parcelaForcada) || null, valor }];
+    const novosPagamentos = pagamentos.map(item => ({ id: crypto.randomUUID(), valor: item.valor, data, parcela: item.parcela, contaId, contaNome: nomeConta }));
+    divida.pagamentos.push(...novosPagamentos);
+    const historico = JSON.parse(localStorage.getItem("financeiro_historico") || "[]");
+    novosPagamentos.forEach(item => historico.push({
+        id: item.id, tipo: "Pagamento de dívida", data, valor: item.valor,
+        dividaId: divida.id, descricao: divida.nome || "Dívida", parcela: item.parcela,
+        contaId, contaNome: nomeConta
+    }));
+    localStorage.setItem("financeiro_historico", JSON.stringify(historico));
+    salvarDividas(carregarDividas().map(item => String(item.id) === String(divida.id) ? divida : item));
+    return true;
+}
+
+function iniciarMovimentacoes() {
+    const lista = document.getElementById("listaMovimentacoes");
+    const filtro = document.getElementById("filtroMesMovimentacoes");
+    if (!lista || !filtro) return;
+    if (!filtro.value) {
+        const hoje = new Date();
+        filtro.value = `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, "0")}`;
+    }
+    function renderizar() {
+        const contas = carregarContas();
+        const historico = [];
+        const localizarConta = id => contas.find(conta => String(conta.id) === String(id))?.nome || "Conta removida";
+        const pagamentosSalvos = JSON.parse(localStorage.getItem("financeiro_historico") || "[]").filter(item => item.tipo === "Pagamento de dívida");
+        const idsPagamentosSalvos = new Set(pagamentosSalvos.map(item => String(item.id)));
+        pagamentosSalvos.forEach(pagamento => historico.push({
+            data: pagamento.data || "", tipo: pagamento.tipo,
+            descricao: `${pagamento.descricao || "Dívida"}${pagamento.parcela ? ` - parcela ${pagamento.parcela}` : ""}`,
+            conta: pagamento.contaNome || (pagamento.contaId ? localizarConta(pagamento.contaId) : "Sem conta associada"),
+            valor: -Number(pagamento.valor || 0)
+        }));
+        carregarDividas().forEach(divida => (divida.pagamentos || []).filter(pagamento => !idsPagamentosSalvos.has(String(pagamento.id))).forEach(pagamento => historico.push({
+            data: pagamento.data || "",
+            tipo: "Pagamento de dívida",
+            descricao: `${divida.nome || "Dívida"}${pagamento.parcela ? ` - parcela ${pagamento.parcela}` : ""}`,
+            conta: pagamento.contaNome || (pagamento.contaId ? localizarConta(pagamento.contaId) : "Sem conta associada"),
+            valor: -Number(pagamento.valor || 0)
+        })));
+        JSON.parse(localStorage.getItem("financeiro_transferencias") || "[]").forEach(item => historico.push({
+            data: item.data || "", tipo: "Transferência",
+            descricao: `${item.origemNome || "Conta"} → ${item.destinoNome || "Conta"}`,
+            conta: `${item.origemNome || localizarConta(item.origemId)} → ${item.destinoNome || localizarConta(item.destinoId)}`,
+            valor: Number(item.valor || 0)
+        }));
+        JSON.parse(localStorage.getItem("financeiro_receitas") || "[]").forEach(item => historico.push({
+            data: item.data || "", tipo: "Receita", descricao: item.descricao || "Receita",
+            conta: item.contaNome || (item.contaId ? localizarConta(item.contaId) : "Sem depósito associado"), valor: Number(item.valor || 0)
+        }));
+        const filtrado = historico.filter(item => !filtro.value || item.data.startsWith(filtro.value)).sort((a, b) => b.data.localeCompare(a.data));
+        lista.innerHTML = `<div class="tabela-responsiva"><table class="tabela-dividas"><thead><tr><th>Data</th><th>Movimento</th><th>Descrição</th><th>Conta / origem</th><th>Valor</th></tr></thead><tbody>${filtrado.length ? filtrado.map(item => `<tr><td>${formatarData(item.data)}</td><td>${escaparHtml(item.tipo)}</td><td>${escaparHtml(item.descricao)}</td><td>${escaparHtml(item.conta)}</td><td class="${item.tipo === "Transferência" ? "amount-neutral" : item.valor < 0 ? "amount-out" : "amount-in"}">${formatarMoeda(item.valor)}</td></tr>`).join("") : '<tr><td colspan="5">Nenhuma movimentação neste mês.</td></tr>'}</tbody></table></div>`;
+    }
+    filtro.addEventListener("change", renderizar);
+    renderizarMovimentacoes = renderizar;
+    renderizar();
 }
 
 function adicionarAcoesExcluir(container, seletor, registros, descricao, excluir) {
@@ -1712,11 +2222,14 @@ function iniciarRelatorio() {
         const dividas = carregarDividas().map(item => {
             const dataRelatorio = item.data || (item.inicio ? `${item.inicio}-01` : "");
             const tipo = item.tipo || "pontual";
-            const mesesAtivos = tipo === "pontual" ? [] : mesesPeriodo.filter(mes => mes >= dataRelatorio.slice(0, 7) && dataRelatorio <= fim);
-            const valorParcela = Number(item.valor || 0) / Math.max(1, Number(item.parcelas || 1));
-            const valorPeriodo = tipo === "pontual"
-                ? (dentroDoPeriodo(dataRelatorio) ? Number(item.valor || 0) : 0)
-                : Number(item.valor || 0) * mesesAtivos.length;
+            const inicioMesRelatorio = dataRelatorio.slice(0, 7);
+            const quantidadeParcelas = Math.max(1, Number(item.parcelas || 1));
+            const mesesAtivos = mesesPeriodo.filter(mes => {
+                const distancia = diferencaMeses(inicioMesRelatorio, mes);
+                return distancia >= 0 && (tipo !== "pontual" || distancia < quantidadeParcelas);
+            });
+            const valorParcela = Number(item.valor || 0) / quantidadeParcelas;
+            const valorPeriodo = (tipo === "pontual" ? valorParcela : Number(item.valor || 0)) * mesesAtivos.length;
             const pagamentos = (item.pagamentos || []).map(pagamento => ({ ...pagamento, valor: Number(pagamento.valor || 0) }));
             const pagamentosPeriodo = pagamentos.filter(pagamento => dentroDoPeriodo(pagamento.data));
             const valorPagoTotal = pagamentos.reduce((soma, pagamento) => soma + pagamento.valor, 0);
@@ -1791,3 +2304,8 @@ function iniciarRelatorio() {
 }
 
 if (document.getElementById("conteudoRelatorio")) iniciarRelatorio();
+
+const mesResumoFinanceiroInput = document.getElementById("mesResumoFinanceiro");
+if (mesResumoFinanceiroInput) mesResumoFinanceiroInput.addEventListener("change", atualizarResumoFinanceiroMensal);
+iniciarReceitas();
+if (document.getElementById("listaMovimentacoes")) iniciarMovimentacoes();

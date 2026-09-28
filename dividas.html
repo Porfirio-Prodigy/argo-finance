@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 
 <head>
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg">
 
     <meta charset="UTF-8">
 
@@ -15,7 +15,7 @@
 
     <link
         rel="stylesheet"
-        href="style.css"
+        href="./style.css"
     >
 
 </head>
@@ -32,36 +32,7 @@
                 Financeiro
             </div>
 
-            <nav>
-
-                <a href="index.html">
-                    Visão geral
-                </a>
-
-                <a href="contas.html">
-                    Contas
-                </a>
-
-                <a href="cartoes.html">
-                    Cartões
-                </a>
-
-                <a
-                    href="dividas.html"
-                    class="active"
-                >
-                    Dívidas
-                </a>
-
-                <a href="emprestimos.html">
-                    Empréstimos
-                </a>
-
-                <a href="investimentos.html">
-                    Investimentos
-                </a>
-
-            <a href="relatorios.html">Relat&#243;rios</a></nav>
+            <nav><a href="index.html">Visão geral</a><a href="contas.html">Contas</a><a href="cartoes.html">Cartões</a><a href="dividas.html" class="active">Dívidas</a><a href="calendario.html">Calendário</a><a href="emprestimos.html">Empréstimos</a><a href="investimentos.html">Investimentos</a><a href="relatorios.html">Relatórios</a><a href="ajuda.html">Ajuda</a></nav>
 
         </aside>
 
@@ -97,7 +68,7 @@
                 <!-- LISTA -->
 
                 <div class="filtros-tabela">
-                    <input id="filtroMesDividas" type="month" aria-label="Filtrar por m&#234;s">
+                    <input id="filtroMesDividas" type="month" aria-label="Filtrar por mês">
                     <input id="filtroBuscaDividas" type="search" placeholder="Buscar por nome, cartão ou pessoa">
                     <select id="filtroTipoDividas">
                         <option value="">Todos os tipos</option>
@@ -257,7 +228,7 @@
 
                     <div class="form-group">
 
-                        <label for="dataDivida">Data da compra / in&#237;cio</label>
+                        <label for="dataDivida">Data da compra / início</label>
 
                         <input
                             type="date"
@@ -274,21 +245,21 @@
                 <div class="form-group">
                     <label for="formaPagamentoDivida">Forma de pagamento</label>
                     <select id="formaPagamentoDivida" required>
-                        <option value="cartao_proprio">Cart&#227;o pr&#243;prio</option>
-                        <option value="cartao_terceiros">Cart&#227;o de terceiros</option>
+                        <option value="cartao_proprio">Cartão próprio</option>
+                        <option value="cartao_terceiros">Cartão de terceiros</option>
                         <option value="pix">Pix</option>
-                        <option value="dinheiro">Dinheiro / f&#237;sico</option>
+                        <option value="dinheiro">Dinheiro / físico</option>
                     </select>
                 </div>
 
                 <div class="form-row hidden" id="detalhesCartaoDivida">
                     <div class="form-group">
-                        <label for="cartaoDivida">Nome do cart&#227;o</label>
+                        <label for="cartaoDivida">Nome do cartão</label>
                         <input type="text" id="cartaoDivida" placeholder="Ex: Nubank">
                     </div>
                     <div class="form-group hidden" id="grupoTitularCartao">
                         <label for="titularCartaoDivida">Nome do titular</label>
-                        <input type="text" id="titularCartaoDivida" placeholder="Pessoa titular do cart&#227;o">
+                        <input type="text" id="titularCartaoDivida" placeholder="Pessoa titular do cartão">
                     </div>
                 </div>
 
@@ -351,7 +322,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h2>Abater dívida</h2>
-                <button id="btnFecharPagamentoDivida" class="btn-fechar" type="button">&times;</button>
+                <button id="btnFecharPagamentoDivida" class="btn-fechar" type="button">×</button>
             </div>
             <form id="formPagamentoDivida">
                 <div class="form-group">
@@ -359,10 +330,13 @@
                     <select id="dividaPagamento" required></select>
                 </div>
                 <p id="saldoPagamentoDivida" class="report-note"></p>
+                <div class="form-group"><label for="tipoAbatimentoDivida">Como deseja abater?</label><select id="tipoAbatimentoDivida"><option value="valor">Informar valor</option><option value="parcelas">Abater parcelas completas</option></select></div>
                 <div class="form-group">
                     <label for="valorPagamentoDivida">Valor pago</label>
                     <input id="valorPagamentoDivida" type="number" min="0.01" step="0.01" required>
                 </div>
+                <div class="form-group hidden" id="grupoQuantidadeParcelasAbatimento"><label for="quantidadeParcelasAbatimento">Quantidade de parcelas</label><input id="quantidadeParcelasAbatimento" type="number" min="1" step="1" value="1"></div>
+                <div class="form-group"><label for="contaPagamentoDivida">Saiu de qual conta? (opcional)</label><select id="contaPagamentoDivida"><option value="">Não registrar saída de conta</option></select></div>
                 <div class="form-group">
                     <label for="dataPagamentoDivida">Data do pagamento</label>
                     <input id="dataPagamentoDivida" type="date" required>

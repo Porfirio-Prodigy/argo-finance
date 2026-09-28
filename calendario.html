@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg">
+    <link rel="stylesheet" href="./style.css">
+    <title>Financeiro - Calendário</title>
+</head>
+<body>
+    <div class="app">
+        <aside class="sidebar">
+            <div class="logo">Financeiro</div>
+            <nav><a href="index.html">Visão geral</a><a href="contas.html">Contas</a><a href="cartoes.html">Cartões</a><a href="dividas.html">Dívidas</a><a href="calendario.html" class="active">Calendário</a><a href="emprestimos.html">Empréstimos</a><a href="investimentos.html">Investimentos</a><a href="relatorios.html">Relatórios</a><a href="ajuda.html">Ajuda</a></nav>
+        </aside>
+        <main class="main">
+            <section>
+                <header class="page-header">
+                    <div><h1>Calendário de dívidas</h1><p>Veja vencimentos, parcelas e valores previstos em cada dia.</p></div>
+                    <a class="button-link" href="dividas.html">Gerenciar dívidas</a>
+                </header>
+                <div class="calendar-toolbar">
+                    <button id="mesAnteriorCalendario" type="button" class="btn-cancelar" aria-label="Mês anterior">‹</button>
+                    <label for="mesCalendario">Mês <input id="mesCalendario" type="month"></label>
+                    <button id="mesProximoCalendario" type="button" class="btn-cancelar" aria-label="Próximo mês">›</button>
+                </div>
+                <div id="resumoCalendario" class="resumo-grid monthly-debt-summary"></div>
+                <div id="gradeCalendarioDividas" class="calendar-grid" role="grid" aria-label="Calendário mensal de pagamentos"></div>
+            </section>
+        </main>
+    </div>
+                <div id="modalPagamentoCalendario" class="modal hidden"><div class="modal-content"><div class="modal-header"><h2>Registrar pagamento</h2><button id="btnFecharPagamentoCalendario" class="btn-fechar" type="button">×</button></div><form id="formPagamentoCalendario"><p id="infoPagamentoCalendario" class="report-note"></p><div class="form-group"><label for="valorPagamentoCalendario">Valor deste vencimento</label><input id="valorPagamentoCalendario" type="number" min="0.01" step="0.01" required></div><div class="form-group"><label for="contaPagamentoCalendario">Debitar de qual conta? (opcional)</label><select id="contaPagamentoCalendario"><option value="">Registrar sem alterar saldo</option></select></div><div class="form-group"><label for="dataPagamentoCalendario">Data do pagamento</label><input id="dataPagamentoCalendario" type="date" required></div><div class="form-actions"><button id="btnCancelarPagamentoCalendario" type="button" class="btn-cancelar">Cancelar</button><button type="submit">Salvar pagamento</button></div></form></div></div>    <script src="script.js"></script>
+</body>
+</html>

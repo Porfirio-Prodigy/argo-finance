@@ -5,7 +5,7 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Financeiro - Empr&#233;stimos</title>
+    <title>Financeiro - Empréstimos</title>
     <link rel="stylesheet" href="style.css">
 </head>
 
@@ -13,24 +13,19 @@
     <div class="app">
         <aside class="sidebar">
             <div class="logo">Financeiro</div>
-            <nav>
-                <a href="index.html">Vis&#227;o geral</a><a href="contas.html">Contas</a><a
-                    href="cartoes.html">Cart&#245;es</a><a href="dividas.html">D&#237;vidas</a><a
-                    href="emprestimos.html" class="active">Empr&#233;stimos</a><a
-                    href="investimentos.html">Investimentos</a>
-            <a href="relatorios.html">Relat&#243;rios</a></nav>
+            <nav><a href="index.html">Visão geral</a><a href="contas.html">Contas</a><a href="cartoes.html">Cartões</a><a href="dividas.html">Dívidas</a><a href="calendario.html">Calendário</a><a href="emprestimos.html" class="active">Empréstimos</a><a href="investimentos.html">Investimentos</a><a href="relatorios.html">Relatórios</a><a href="ajuda.html">Ajuda</a></nav>
         </aside>
         <main class="main">
             <section>
                 <header class="page-header">
                     <div>
-                        <h1>Empr&#233;stimos</h1>
-                        <p>Registre valores que voc&#234; tomou emprestado ou emprestou a outras pessoas.</p>
-                    </div><button id="btnNovoEmprestimo">Novo empr&#233;stimo</button>
+                        <h1>Empréstimos</h1>
+                        <p>Registre valores que você tomou emprestado ou emprestou a outras pessoas.</p>
+                    </div><button id="btnNovoEmprestimo">Novo empréstimo</button>
                 </header>
                 <div class="filtros-tabela"><input id="filtroMesEmprestimos" type="month"
-                        aria-label="Filtrar por m&#234;s"><input id="filtroBuscaEmprestimos" type="search"
-                        placeholder="Buscar pessoa ou observa&#231;&#227;o"></div>
+                        aria-label="Filtrar por mês"><input id="filtroBuscaEmprestimos" type="search"
+                        placeholder="Buscar pessoa ou observação"></div>
                 <div id="listaEmprestimos"></div>
             </section>
         </main>
@@ -38,8 +33,8 @@
     <div id="modalEmprestimo" class="modal hidden">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 id="tituloModalEmprestimo">Novo empr&#233;stimo</h2><button id="btnFecharEmprestimo"
-                    class="btn-fechar" type="button">&times;</button>
+                <h2 id="tituloModalEmprestimo">Novo empréstimo</h2><button id="btnFecharEmprestimo"
+                    class="btn-fechar" type="button">×</button>
             </div>
             <form id="formEmprestimo">
                 <div class="form-group"><label for="direcaoEmprestimo">Movimento</label><select id="direcaoEmprestimo"
@@ -49,19 +44,19 @@
                     </select></div>
                 <div class="form-group"><label id="labelPessoaEmprestimo" for="pessoaEmprestimo">Quem
                         emprestou</label><input id="pessoaEmprestimo" type="text" required
-                        placeholder="Nome da pessoa ou institui&#231;&#227;o"></div>
+                        placeholder="Nome da pessoa ou instituição"></div>
                 <div class="form-group"><label for="valorEmprestimo">Valor total</label><input id="valorEmprestimo"
                         type="number" min="0.01" step="0.01" required></div>
-                <div class="form-group"><label for="valorPagoEmprestimo">Valor j&#225; pago / recebido</label><input
+                <div class="form-group"><label for="valorPagoEmprestimo">Valor já pago / recebido</label><input
                         id="valorPagoEmprestimo" type="number" min="0" step="0.01" value="0" required></div>
-                <div class="form-group"><label for="dataEmprestimo">Data do empr&#233;stimo</label><input
+                <div class="form-group"><label for="dataEmprestimo">Data do empréstimo</label><input
                         id="dataEmprestimo" type="date" required></div>
-                <div class="form-group"><label for="descricaoEmprestimo">Observa&#231;&#245;es</label><textarea
+                <div class="form-group"><label for="descricaoEmprestimo">Observações</label><textarea
                         id="descricaoEmprestimo" rows="3"
-                        placeholder="Condi&#231;&#245;es combinadas, parcelas, etc."></textarea></div>
+                        placeholder="Condições combinadas, parcelas, etc."></textarea></div>
                 <div class="form-actions"><button type="button" id="btnCancelarEmprestimo"
                         class="btn-cancelar">Cancelar</button><button type="submit" id="btnSalvarEmprestimo">Salvar
-                        empr&#233;stimo</button></div>
+                        empréstimo</button></div>
             </form>
         </div>
     </div>
